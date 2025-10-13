@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kanaklata Agency · Today’s Sales</title>
+  <style>
+    :root{
+      /* Light professional theme */
+      --panel: rgba(255,255,255,.92);
+      --card:  rgba(255,255,255,.98);
+      --text:#0f172a; --muted:#64748b;
+      --accent:#4f46e5; --accent-2:#38bdf8; --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+      --ring:#c7d2fe; --radius:16px;
+      --shadow:0 20px 50px rgba(2,6,23,.10);
+      --border:1px solid rgba(15,23,42,.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow-x:hidden}
+    body{
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      /* Light, professional gradient */
+      background:
+        radial-gradient(1200px 800px at 12% 18%, rgba(99,102,241,.18) 0%, transparent 60%),
+        radial-gradient(1000px 650px at 90% 12%, rgba(56,189,248,.16) 0%, transparent 60%),
+        linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
+      background-attachment:fixed; padding:22px;
+    } /* Pastel gradients are widely used for professional UIs. [web:442][web:434] */
+
+    .wrap{max-width:1200px; margin:0 auto; display:grid; gap:22px}
+
+    /* Header (bright glass) */
+    .header{
+      background:var(--card); border:var(--border); border-radius:20px; padding:18px 22px;
+      box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+      backdrop-filter: blur(10px);
+      position:relative; overflow:hidden;
+    } /* Light-mode glass uses higher white alpha and softer shadows. [web:473] */
+    .header h1{font-size:20px; font-weight:900}
+    .header::after{
+      content:""; position:absolute; inset:0; transform:translateX(-100%);
+      background:linear-gradient(120deg, transparent, rgba(255,255,255,.45), transparent);
+      mix-blend-mode:screen; animation: shimmer 3.2s infinite;
+    } /* Brighter shimmer fits light surfaces. [web:382] */
+    @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .date, .mode{
+      background:#fff; border:2px solid transparent; border-radius:14px; padding:8px 12px; color:var(--text);
+      box-shadow:0 4px 16px rgba(2,6,23,.06);
+    }
+    .date:focus-within, .mode:focus-within{border-color:var(--accent); box-shadow:0 0 0 4px rgba(79,70,229,.15)} /* :focus-visible a11y guidance. [web:476][web:474] */
+    .date input[type="date"], .mode select{border:none; outline:none; background:transparent; font-weight:700; color:var(--text)}
+
+    .grid{display:grid; grid-template-columns:1.2fr 1fr; gap:22px}
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+    /* Panels (light glass) */
+    .panel{
+      background:var(--panel); border:var(--border); border-radius:20px; padding:18px;
+      box-shadow:var(--shadow); backdrop-filter:blur(8px);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .panel:hover{transform:translateY(-2px); box-shadow:0 24px 60px rgba(2,6,23,.12)}
+    .panel header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
+    .panel h2{font-size:16px; font-weight:900}
+    .hint{font-size:12px; color:var(--muted)}
+
+    .section{margin-top:12px; border:1px dashed rgba(15,23,42,.10); border-radius:14px; padding:12px}
+    .group{display:grid; grid-template-columns:1fr 150px 120px; gap:10px; align-items:center; margin-bottom:10px}
+    .group label{font-weight:800; font-size:13px}
+    .input{
+      display:flex; align-items:center; gap:8px; background:#fff;
+      border:2px solid transparent; border-radius:12px; padding:10px 12px; color:var(--text);
+      box-shadow: inset 0 0 0 1px rgba(2,6,23,.04);
+    }
+    .input:focus-within{border-color:var(--accent); box-shadow:0 0 0 4px rgba(79,70,229,.10)}
+    .input input[type="number"], .input input[type="text"]{
+      width:100%; border:none; outline:none; background:transparent; color:var(--text); font-weight:800; -moz-appearance:textfield
+    }
+    .input input::-webkit-outer-spin-button, .input input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0 }
+    .unit{font-size:12px; color:#334155; font-weight:800; background:#eef2ff; padding:4px 8px; border-radius:999px}
+
+    .btn{
+      border:none; padding:12px 16px; border-radius:12px; font-weight:900; letter-spacing:.2px; cursor:pointer;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:#ffffff; box-shadow:0 12px 28px rgba(56,189,248,.22);
+      transition:.18s; position:relative; overflow:hidden;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn.secondary{background:#f4f6ff; color:#374151; border:1px solid rgba(79,70,229,.25); box-shadow:none}
+
+    /* Table (light) */
+    table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:14px; box-shadow:0 8px 18px rgba(2,6,23,.06); background:#fff}
+    thead th{font-size:12px; text-align:left; color:#64748b; text-transform:uppercase; letter-spacing:.5px; padding:12px; background:#f8fafc}
+    tbody td{padding:12px; border-top:1px solid #e5e7eb; font-weight:700; color:#0f172a}
+    tbody tr:hover{background:#f1f5ff} /* Light, enterprise table hover. [web:464] */
+
+    /* KPIs */
+    .totals{display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-top:12px}
+    @media (max-width:840px){ .totals{grid-template-columns:1fr 1fr} }
+    @media (max-width:520px){ .totals{grid-template-columns:1fr} }
+    .kpi{
+      background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      box-shadow:0 10px 22px rgba(2,6,23,.06);
+    }
+    .kpi .name{font-size:12px; color:#6b7280; font-weight:800; text-transform:uppercase}
+    .kpi .val{font-size:22px; font-weight:900}
+    .ok{color:#047857} .warn{color:#b45309}
+
+    .flex{display:flex; gap:10px; flex-wrap:wrap}
+    .bad{padding:10px 12px; border-radius:12px; background:rgba(239,68,68,.10); color:#b91c1c; border:1px solid rgba(239,68,68,.22); display:none}
+    .okmsg{padding:10px 12px; border-radius:12px; background:rgba(16,185,129,.10); color:#047857; border:1px solid rgba(16,185,129,.22); display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="header">
+      <h1>Today’s Sales Entry</h1>
+      <div class="row">
+        <div class="date">
+          <strong>Date:</strong>
+          <input id="entryDate" type="date" required aria-label="Select date">
+        </div>
+        <div class="mode" aria-label="Calculation mode">
+          <label for="calcMode">Mode</label>
+          <select id="calcMode">
+            <option value="net" selected>Net (Sales − Returns)</option>
+            <option value="gross">Gross (Sales only)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel" role="form" aria-labelledby="formTitle">
+        <header>
+          <h2 id="formTitle">Maal Entries</h2>
+          <div class="hint">Fill quantities in units (kgs, pcs, or cartons as per product setup)</div>
+        </header>
+
+        <div class="section">
+          <div class="group">
+            <label for="inQty">Maal kitna aaya</label>
+            <div class="input"><input id="inQty" type="number" min="0" step="0.01" placeholder="0" required></div>
+            <span class="unit">qty</span>
+          </div>
+          <div class="group">
+            <label for="inNote">Note</label>
+            <div class="input"><input id="inNote" type="text" placeholder="optional"></div>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="group">
+            <label for="loadedQty">Gaadi mein load</label>
+            <div class="input"><input id="loadedQty" type="number" min="0" step="0.01" placeholder="0" required></div>
+            <span class="unit">qty</span>
+          </div>
+          <div class="group">
+            <label for="loadedNote">Note</label>
+            <div class="input"><input id="loadedNote" type="text" placeholder="optional"></div>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="group">
+            <label for="issuedQty">Sales</label>
+            <div class="input"><input id="issuedQty" type="number" min="0" step="0.01" placeholder="0" required></div>
+            <span class="unit">qty</span>
+          </div>
+          <div class="group">
+            <label for="issuedNote">Note</label>
+            <div class="input"><input id="issuedNote" type="text" placeholder="optional"></div>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="group">
+            <label for="returnQty">Total Return</label>
+            <div class="input"><input id="returnQty" type="number" min="0" step="0.01" placeholder="0" required></div>
+            <span class="unit">qty</span>
+          </div>
+          <div class="group">
+            <label for="returnNote">Note</label>
+            <div class="input"><input id="returnNote" type="text" placeholder="optional"></div>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="flex">
+          <button class="btn" id="saveBtn" type="button">Save (POST)</button>
+          <button class="btn secondary" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div id="okMsg" class="okmsg">Saved.</div>
+        <div id="errMsg" class="bad">Failed. Check server/CORS.</div>
+      </section>
+
+      <section class="panel" aria-labelledby="calcTitle">
+        <header>
+          <h2 id="calcTitle">Calculated Summary</h2>
+          <div class="hint">Auto-calculated from entries for the selected date</div>
+        </header>
+
+        <div class="totals">
+          <div class="kpi"><span class="name" id="salesLabel">Net Sales</span><span class="val ok" id="kpiSales">0</span></div>
+          <div class="kpi"><span class="name">Total Returns</span><span class="val warn" id="kpiReturns">0</span></div>
+          <div class="kpi"><span class="name">Available Stock</span><span class="val" id="kpiAvail">0</span></div>
+          <div class="kpi"><span class="name">Missing Items</span><span class="val warn" id="kpiMissing">0</span></div>
+        </div>
+
+        <div class="section" style="margin-top:14px">
+          <header class="row" style="justify-content:space-between">
+            <strong>Detailed Entries</strong>
+            <small class="hint">Today’s breakdown</small>
+          </header>
+
+          <table id="detailTable" style="margin-top:10px">
+            <thead><tr><th>Type</th><th>Qty</th><th>Note</th><th>Time</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8080/api';
+    const ENTRY_ENDPOINT = `${API_BASE}/todaysales`;
+    const byId = id => document.getElementById(id);
+    const INR = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+    function valNum(id){ return Number(byId(id).value || 0); }
+    function setText(id, v){ byId(id).textContent = v; }
+    function isoDate(d){ return d.toISOString().slice(0,10); }
+    function nowHM(){ const n=new Date(); return n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }
+
+    let currentDate = isoDate(new Date());
+    let entries = [];
+    const dateEl = byId('entryDate'); dateEl.value = currentDate;
+
+    function sum(kind){ return entries.filter(e=>e.type===kind).reduce((s,e)=> s + Number(e.qty||0), 0); }
+
+    function recalc(){
+      const mode = byId('calcMode').value;
+      const totalIn = sum('in');
+      the_totalLoaded = sum('loaded'); // typo fixed below
+      const totalLoaded = sum('loaded');
+      const totalIssued = sum('issued');
+      const totalReturn = sum('return');
+
+      let salesMetric, available;
+      if(mode==='net'){
+        salesMetric = (totalIssued - totalReturn);
+        available   = totalIn - totalIssued + totalReturn;
+        byId('salesLabel').textContent = 'Net Sales';
+      }else{
+        salesMetric = totalIssued;
+        available   = totalIn - totalIssued;
+        byId('salesLabel').textContent = 'Total Sales';
+      }
+
+      const missing = totalIn - totalLoaded - totalIssued + totalReturn;
+
+      setText('kpiSales', salesMetric.toFixed(2));
+      setText('kpiReturns', totalReturn.toFixed(2));
+      setText('kpiAvail', available.toFixed(2));
+      setText('kpiMissing', missing.toFixed(2));
+    }
+
+    function labelOf(kind){ return {in:'Maal Aaya', loaded:'Gaadi Mein Load', issued:'Sales', return:'Total Return'}[kind] || kind; }
+
+    function renderTable(){
+      const tb = document.querySelector('#detailTable tbody');
+      tb.innerHTML = entries.map(e=>`
+        <tr>
+          <td>${labelOf(e.type)}</td>
+          <td><strong>${Number(e.qty).toFixed(2)}</strong></td>
+          <td>${e.note ? e.note.replace(/[<>]/g,'') : ''}</td>
+          <td>${e.time}</td>
+        </tr>
+      `).join('');
+    }
+
+    function pushEntry(kind, qty, note){
+      entries.push({ type:kind, qty:Number(qty||0), note:note||'', time: nowHM() });
+      renderTable(); recalc();
+    }
+
+    async function createToday(){
+      const payload = { date: currentDate, entries };
+      const r = await fetch(ENTRY_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), credentials:'include' });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    }
+
+    async function loadToday(){
+      const r = await fetch(`${ENTRY_ENDPOINT}?date=${currentDate}`, {credentials:'include'});
+      if(!r.ok){ entries=[]; renderTable(); recalc(); return; }
+      const data = await r.json();
+      entries = Array.isArray(data?.entries) ? data.entries : [];
+      renderTable(); recalc();
+    }
+
+    byId('saveBtn').addEventListener('click', async ()=>{
+      const inQty = valNum('inQty'), loadedQty = valNum('loadedQty'), issuedQty = valNum('issuedQty'), returnQty = valNum('returnQty');
+      if(inQty>0) pushEntry('in', inQty, byId('inNote').value);
+      if(loadedQty>0) pushEntry('loaded', loadedQty, byId('loadedNote').value);
+      if(issuedQty>0) pushEntry('issued', issuedQty, byId('issuedNote').value);
+      if(returnQty>0) pushEntry('return', returnQty, byId('returnNote').value);
+
+      byId('okMsg').style.display='none';
+      byId('errMsg').style.display='none';
+      try{ await createToday(); byId('okMsg').style.display='block'; }
+      catch(e){ console.error(e); byId('errMsg').style.display='block'; }
+    });
+
+    byId('resetBtn').addEventListener('click', ()=>{
+      ['inQty','inNote','loadedQty','loadedNote','issuedQty','issuedNote','returnQty','returnNote'].forEach(id=> byId(id).value='');
+    });
+
+    byId('entryDate').addEventListener('change', async ()=>{ currentDate = byId('entryDate').value || currentDate; await loadToday(); });
+    byId('calcMode').addEventListener('change', recalc);
+
+    loadToday();
+  </script>
+</body>
+</html>

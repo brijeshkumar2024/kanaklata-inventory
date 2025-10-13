@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inventory · Kanaklata Agency</title>
+  <link rel="stylesheet" href="./admin.css" />
+</head>
+<body>
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Kanaklata Agency</div>
+      <nav class="nav">
+        <a href="adminindex.html">Dashboard</a>
+        <a href="workers.html">Workers</a>
+        <a href="orders.html">Orders</a>
+        <a href="payments.html">Payments</a>
+        <a class="active" href="inventory.html">Inventory</a>
+        <a href="reports.html">Reports</a>
+        <a href="profiles.html">Profiles</a>
+        <a href="daily-sales.html">Daily Sales</a>
+      </nav>
+      <div class="foot">
+        © <span id="y"></span> Kanaklata Agency
+      </div>
+    </aside>
+
+    <!-- Header -->
+    <header class="header">
+      <h3>Inventory</h3>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <section class="panel">
+        <header class="panel-header">
+          <h3>Products</h3>
+        </header>
+
+        <table id="products">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Products will load here -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="./shared.js"></script>
+  <script>
+    const base = 'http://localhost:8080/api';
+
+    async function load() {
+      try {
+        const res = await fetch(`${base}/products`);
+        const data = await res.json();
+
+        qs('#products tbody').innerHTML = data.map(p => `
+          <tr>
+            <td>${p.sku}</td>
+            <td>${p.name}</td>
+            <td>₹${Number(p.price || 0).toLocaleString('en-IN')}</td>
+            <td>${p.stock || 0}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading products:', err);
+        qs('#products tbody').innerHTML = `
+          <tr><td colspan="4" style="text-align:center; color:red;">Failed to load products</td></tr>
+        `;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

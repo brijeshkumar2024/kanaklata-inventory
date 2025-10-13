@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Worker · Kanaklata Agency</title>
+  <style>
+    body {margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f6fa;}
+    .layout{display:flex;min-height:100vh;}
+    .sidebar{width:220px;background:#2c3e50;color:#fff;display:flex;flex-direction:column;}
+    .brand{font-size:18px;font-weight:bold;padding:16px;text-align:center;border-bottom:1px solid #34495e;}
+    .nav{flex:1;display:flex;flex-direction:column;}
+    .nav a{color:#ecf0f1;padding:12px 16px;text-decoration:none;display:block;}
+    .nav a:hover,.nav a.active{background:#34495e;}
+    .foot{padding:12px;text-align:center;font-size:12px;border-top:1px solid #34495e;}
+    .header{flex:1;background:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;}
+    .header h3{margin:0;}
+    .badge{background:#3498db;color:#fff;padding:4px 8px;border-radius:12px;font-size:12px;}
+    .main{flex:1;padding:20px;}
+    .panel{background:#fff;padding:16px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;}
+    .form-row{display:flex;flex-direction:column;}
+    .form-row label{font-size:14px;margin-bottom:6px;color:#333;}
+    .req{color:red;}
+    .input,.select,textarea{padding:8px 10px;font-size:14px;border:1px solid #ccc;border-radius:4px;}
+    .avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid #ccc;}
+    .actions{display:flex;gap:10px;margin-top:10px;}
+    .btn{padding:8px 14px;border:none;border-radius:4px;background:#3498db;color:#fff;cursor:pointer;text-decoration:none;font-size:14px;display:inline-block;}
+    .btn.secondary{background:#7f8c8d;}
+    .btn:hover{opacity:0.9;}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Kanaklata Agency</div>
+    <nav class="nav">
+      <a href="adminindex.html">Dashboard</a>
+      <a class="active" href="workers.html">Workers</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="inventory.html">Inventory</a>
+      <a href="reports.html">Reports</a>
+      <a href="profiles.html">Profiles</a>
+      <a href="daily-sales.html">Daily Sales</a>
+    </nav>
+    <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column">
+    <header class="header">
+      <h3>Add New Worker</h3>
+      <div class="user"><span class="badge">Admin</span></div>
+    </header>
+
+    <main class="main">
+      <section class="panel">
+        <header><h3 style="margin:0">Worker Details</h3></header>
+        <form id="f" class="form-grid">
+          <div class="form-row">
+            <label>Profile picture</label>
+            <div style="display:flex; align-items:center; gap:12px">
+              <img id="pp" class="avatar" src="https://via.placeholder.com/64" alt="">
+              <input class="input" id="photo" type="file" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="form-row"><label>First name <span class="req">*</span></label><input class="input" id="firstName" required /></div>
+          <div class="form-row"><label>Middle name</label><input class="input" id="middleName" /></div>
+          <div class="form-row"><label>Last name</label><input class="input" id="lastName" /></div>
+          <div class="form-row"><label>Aadhaar</label><input class="input" id="aadhaar" maxlength="12" pattern="^[0-9]{12}$" /></div>
+          <div class="form-row"><label>Contact number</label><input class="input" id="phone" maxlength="10" pattern="^[0-9]{10}$" /></div>
+          <div class="form-row"><label>Email</label><input class="input" id="email" type="email" /></div>
+          <div class="form-row"><label>Role</label>
+            <select class="select" id="role">
+              <option value="">Select role</option>
+              <option>Loader</option>
+              <option>Clerk</option>
+              <option>Driver</option>
+              <option>Supervisor</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Assigned shop/route</label><input class="input" id="assignment" /></div>
+          <div class="form-row"><label>Date of joining</label><input class="input" id="doj" type="date" /></div>
+          <div class="form-row"><label>Employee ID</label><input class="input" id="empId" readonly /></div>
+          <div class="form-row"><label>Username</label><input class="input" id="username" placeholder="leave blank to auto-generate" /></div>
+          <div class="form-row"><label>Password</label><input class="input" id="password" type="text" placeholder="leave blank to auto-generate" /></div>
+          <div class="form-row" style="grid-column:1/3"><label>Remarks</label><textarea class="input" id="remarks" rows="3"></textarea></div>
+
+          <div class="form-row" style="grid-column:1/3">
+            <div class="actions">
+              <button class="btn" type="submit">Save Worker</button>
+              <a class="btn secondary" href="currentworkers.html">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  function byId(id){return document.getElementById(id);}
+  function randStr(len=6){ return Math.random().toString(36).slice(2, 2+len); }
+  function genEmpId(){ const y=new Date().getFullYear().toString().slice(-2); return `EMP-${y}${Date.now().toString().slice(-5)}-${randStr(2).toUpperCase()}`; }
+  function genUsername(){ const f=(byId('firstName').value||'user').trim().toLowerCase(); return `${f}.${randStr(3)}`; }
+  function genPassword(){ return randStr(10)+'!'; }
+
+  byId('empId').value = genEmpId();
+  byId('photo').addEventListener('change', e=>{
+    const f=e.target.files?.[0];
+    if(!f) return;
+    const url=URL.createObjectURL(f);
+    byId('pp').src=url;
+  });
+
+  byId('f').addEventListener('submit', e=>{
+    e.preventDefault();
+    const payload = {
+      firstName: byId('firstName').value.trim(),
+      middleName: byId('middleName').value.trim() || null,
+      lastName: byId('lastName').value.trim() || null,
+      aadhaar: byId('aadhaar').value.trim() || null,
+      employeeId: byId('empId').value.trim(),
+      phone: byId('phone').value.trim() || null,
+      email: byId('email').value.trim() || null,
+      role: byId('role').value || null,
+      assignment: byId('assignment').value.trim() || null,
+      dateOfJoining: byId('doj').value || null,
+      username: byId('username').value.trim() || genUsername(),
+      password: byId('password').value.trim() || genPassword(),
+      remarks: byId('remarks').value.trim() || null
+    };
+    console.log('POST /api/workers', payload); // Hook to backend
+    alert('Worker saved (demo)');
+    location.href='currentworkers.html';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kanaklata Agency · Admin Dashboard</title>
+<style>
+  :root{
+    --ink:#e6edf7; --muted:#a7b3c6;
+    --accent:#6ea8ff; --accent-600:#3f7ee6; --info:#38bdf8;
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --panel: rgba(255,255,255,.08);
+    --card:  rgba(255,255,255,.10);
+    --ring:#7aa2ff; --r:18px;
+    --shadow: 0 20px 42px rgba(0,0,0,.28);
+    --border: 1px solid rgba(255,255,255,.14);
+    --gap:24px; --inset:18px; /* spacing upgrade (8/16/24 scale) */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    color:var(--ink); min-height:100vh; overflow-x:hidden;
+    background:
+      radial-gradient(1200px 800px at 10% 15%, rgba(20,30,48,.45) 0%, transparent 55%),
+      radial-gradient(1000px 650px at 90% 10%, rgba(36,59,85,.40) 0%, transparent 60%),
+      linear-gradient(135deg, #141E30 0%, #243B55 100%);
+  }
+
+  /* Soften background effects */
+  .fx{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+  .blob{position:absolute; width:46vmax; height:46vmax; border-radius:50%; filter:blur(70px); opacity:.12; mix-blend-mode:screen; background: radial-gradient(closest-side, rgba(52,78,123,.85), transparent 70%); animation: blobFloat 26s ease-in-out infinite alternate}
+  .blob.b1{left:-12%; top:-10%}
+  .blob.b2{left:58%; top:0%; background:radial-gradient(closest-side, rgba(36,99,160,.85), transparent 70%); animation-delay:-8s}
+  .fx__dots{position:absolute; inset:0; opacity:.10; background-image: radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1px); background-size: 12px 12px}
+  @keyframes blobFloat{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(2%,-3%,0) scale(1.03)}100%{transform:translate3d(-2%,2%,0) scale(1.05)}}
+
+  .layout{position:relative; z-index:1; display:grid; grid-template-columns:280px 1fr; grid-template-rows:84px 1fr; grid-template-areas:"sidebar header" "sidebar main"; min-height:100vh; gap:22px; padding:22px; padding-bottom:30px}
+
+  /* Sidebar */
+  .sidebar{grid-area:sidebar; background:rgba(8,13,25,.76); color:#dbe7ff; border-radius:var(--r); box-shadow:var(--shadow); padding:20px; display:flex; flex-direction:column; gap:14px; backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.10)}
+  .brand{display:flex; align-items:center; gap:12px; padding:16px 18px; font-weight:800; font-size:18px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px}
+  .brand::before{content:"🏢"; font-size:22px}
+  .nav{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+  .nav a{color:#e5ecff; text-decoration:none; padding:12px 14px; border-radius:14px; display:flex; align-items:center; gap:10px; transition:.18s ease}
+  .nav a:hover{background:rgba(110,168,255,.22)}
+  .nav a.active{background:rgba(110,168,255,.28)}
+  .nav a span{margin-left:auto; opacity:.75; font-size:12px}
+  .foot{margin-top:auto; font-size:12px; color:#9cb3d9; text-align:center; padding:12px; border-top:1px solid rgba(255,255,255,.08)}
+
+  /* Header + quick actions */
+  .header{grid-area:header; background:rgba(13,23,40,.5); border:var(--border); border-radius:var(--r); box-shadow:0 10px 22px rgba(0,0,0,.22); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; backdrop-filter:blur(14px); flex-wrap:wrap}
+  .search{display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.10); border:2px solid rgba(110,168,255,.25); border-radius:16px; padding:10px 14px; min-width:280px; transition:.18s ease}
+  .search:focus-within{border-color:#6ea8ff; box-shadow:0 0 0 6px rgba(110,168,255,.15)}
+  .search input{border:none; outline:none; background:transparent; width:100%; color:#eaf1ff}
+  .actions{display:flex; gap:10px; align-items:center}
+  .cta{padding:10px 14px;border:none;border-radius:10px;font-weight:800;background:linear-gradient(135deg,#6ea8ff,#3f7ee6);color:#07111f;cursor:pointer}
+  .sec{padding:10px 14px;border:1px solid rgba(110,168,255,.25);border-radius:10px;background:rgba(255,255,255,.08);color:#d8e5ff}
+
+  .main{grid-area:main; display:grid; grid-template-rows:auto auto auto; gap:var(--gap)}
+
+  /* Cards grid with better spacing */
+  .cards{display:grid; grid-template-columns:repeat(4, minmax(260px,1fr)); gap:var(--gap); align-items:stretch}
+  @media (max-width:1220px){ .cards{grid-template-columns:repeat(2, minmax(260px,1fr))} }
+  @media (max-width:640px){ .cards{grid-template-columns:1fr} }
+
+  .card-link{position:relative; display:block; text-decoration:none; color:inherit; outline-offset:6px}
+  .card-link:focus-visible{outline:3px solid var(--ring)}
+  .card{
+    position:relative; min-height:196px; background:var(--panel); border-radius:var(--r);
+    padding: var(--inset) calc(var(--inset) + 2px); /* more breathing room */
+    backdrop-filter:blur(16px) saturate(140%);
+    border:var(--border); box-shadow:0 14px 30px rgba(0,0,0,.24);
+    transition:transform .14s ease, box-shadow .14s ease, opacity .28s ease;
+    overflow:hidden; opacity:0; transform:translateY(10px);
+  }
+  .card.is-in{opacity:1; transform:translateY(0)}
+  .shine{position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 40% 60%, rgba(255,255,255,.16) 100%); mix-blend-mode:soft-light; opacity:.15}
+  .card:hover{transform:translateY(-2px); box-shadow:0 18px 38px rgba(0,0,0,.28)}
+  .card h4{font-size:12px; letter-spacing:.12em; color:#9fb0cc; font-weight:800; text-transform:uppercase}
+  .stat{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-top:14px}
+  .n{font-size:46px; font-weight:900; letter-spacing:.2px} /* larger main number */
+
+  /* Pastel accent left bars + icons */
+  .card-wrap:nth-child(1) .card{border-left:5px solid #8ec5ff}
+  .card-wrap:nth-child(2) .card{border-left:5px solid #a78bfa}
+  .card-wrap:nth-child(3) .card{border-left:5px solid var(--good)}
+  .card-wrap:nth-child(4) .card{border-left:5px solid var(--warn)}
+
+  .pill{padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800; border:1px solid rgba(110,168,255,.35); background:rgba(110,168,255,.18); color:#cfe1ff}
+
+  .notices{margin-top:16px; display:flex; flex-direction:column; gap:10px; max-height:150px; overflow:auto}
+  .notice{display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(110,168,255,.10); border:1px solid rgba(110,168,255,.22); border-radius:12px}
+  .dot{width:8px; height:8px; border-radius:50%; background:#6ea8ff}
+
+  /* Charts row: bigger sales chart prominence */
+  .charts{display:grid; grid-template-columns:2.2fr 1fr; gap:var(--gap)}
+  @media (max-width:980px){ .charts{grid-template-columns:1fr} }
+  .chart-card{height:380px} /* larger chart */
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+    .shine{opacity:.08}
+  }
+
+  @media (max-width:640px){
+    .layout{grid-template-columns:1fr; grid-template-areas:"header" "main"; padding:16px; gap:16px}
+    .sidebar{display:none}
+    .search{min-width:unset}
+  }
+</style>
+</head>
+<body>
+  <div class="fx">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <div class="fx__dots"></div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Primary">
+      <div class="brand">Kanaklata Agency</div>
+      <nav class="nav">
+        <a class="active" href="adminindex.html">Dashboard <span>📊</span></a>
+        <a href="workers.html">Workers <span>👥</span></a>
+        <a href="orders.html">Orders <span>📦</span></a>
+        <a href="payments.html">Payments <span>💰</span></a>
+        <a href="inventory.html">Inventory <span>🧾</span></a>
+        <a href="reports.html">Reports <span>📈</span></a>
+        <a href="profiles.html">Profiles <span>👤</span></a>
+        <a href="daily-sales.html">Daily Sales <span>💹</span></a>
+        <a href="bills.html">Generate Bill <span>💹</span></a>
+      </nav>
+      <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+    </aside>
+
+    <header class="header" role="banner">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9bb1d6" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="globalSearch" placeholder="Search orders, products…" aria-label="Global search" />
+      </div>
+      <div class="actions">
+        <button class="sec" id="addProductBtn">Add Product</button>
+        <button class="cta" id="addOrderBtn">+ Add Order</button>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <!-- KPIs -->
+      <section class="cards" aria-label="Key metrics">
+        <div class="card-wrap">
+          <a class="card-link" href="todaysales.html" aria-label="Open Today’s Sales">
+            <article class="card" role="group">
+              <div class="shine"></div>
+              <h4>Today’s Sales</h4>
+              <div class="stat">
+                <div class="n">₹<span id="kpiTodaySales">0</span></div>
+                <span class="pill" id="kpiTodayDelta">₹0</span>
+              </div>
+            </article>
+          </a>
+        </div>
+        <div class="card-wrap">
+          <a class="card-link" href="pastsales.html" aria-label="Open Past Sales">
+            <article class="card" role="group">
+              <div class="shine"></div>
+              <h4>Past Sales</h4>
+              <div class="stat">
+                <div class="n">₹<span id="kpiPastSales">0</span></div>
+                <span class="pill" id="kpiPastDelta">₹0</span>
+              </div>
+            </article>
+          </a>
+        </div>
+        <div class="card-wrap">
+          <a class="card-link" href="pendingorders.html" aria-label="Open Pending Orders">
+            <article class="card" role="group">
+              <div class="shine"></div>
+              <h4>Pending Orders</h4>
+              <div class="stat">
+                <div class="n" id="kpiPendingOrders">0</div>
+                <span class="pill" id="kpiPendingDelta">—</span>
+              </div>
+            </article>
+          </a>
+        </div>
+        <!-- Extra Quick Stats -->
+        <div class="card-wrap">
+          <article class="card" role="group">
+            <div class="shine"></div>
+            <h4>Low Stock Alerts ⚠</h4>
+            <div class="stat">
+              <div class="n" id="kpiLowStock">0</div>
+              <span class="pill" style="border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.18);color:#ffe29a">Check</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="charts" aria-label="Charts">
+        <article class="card chart-card">
+          <div class="shine"></div>
+          <h4>Sales Trend (7 days)</h4>
+          <canvas id="salesLine" style="width:100%;height:300px"></canvas>
+        </article>
+        <article class="card chart-card">
+          <div class="shine"></div>
+          <h4>Top Selling Product ⭐</h4>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+            <div style="font-size:22px;font-weight:900" id="topProduct">—</div>
+            <span class="pill" id="topQty">0 sold</span>
+          </div>
+          <canvas id="invPie" style="width:100%;height:240px;margin-top:8px"></canvas>
+        </article>
+      </section>
+
+      <!-- Quick links -->
+      <section class="cards" aria-label="Quick links" style="grid-template-columns:repeat(4,minmax(220px,1fr))">
+        <a class="card-link" href="inventory.html"><article class="card"><h4>Open Inventory</h4></article></a>
+        <a class="card-link" href="pastsales.html"><article class="card"><h4>Past Sales</h4></article></a>
+        <a class="card-link" href="orders.html"><article class="card"><h4>New Order</h4></article></a>
+        <a class="card-link" href="reports.html"><article class="card"><h4>Download Report</h4></article></a>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script> <!-- Responsive/options. [21] -->
+
+  <script>
+    document.getElementById('y') && (document.getElementById('y').textContent = new Date().getFullYear());
+    const API_BASE = 'http://localhost:8080/api';
+    const INR = n => Number(n||0).toLocaleString('en-IN');
+
+    // Dummy data fallback for charts (last 7 days) as requested
+    const dummyLabels = Array.from({length:7},(_,i)=> {
+      const d=new Date(); d.setDate(d.getDate()-(6-i)); return d.toISOString().slice(0,10);
+    }); // [YYYY-MM-DD,...]
+    const dummySales = [100,250,90,320,180,400,230]; // sample series
+
+    async function j(url){ const r = await fetch(url,{credentials:'include'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+    function setKPI(id, val, prefix=''){
+      const el = document.getElementById(id); if(!el) return;
+      el.textContent = prefix ? prefix + INR(val) : INR(val);
+    }
+
+    async function loadKPIs(){
+      const [orders, payments, notices, stock] = await Promise.all([
+        j(`${API_BASE}/orders`).catch(()=>[]),
+        j(`${API_BASE}/payments`).catch(()=>[]),
+        j(`${API_BASE}/notices`).catch(()=>[]),
+        j(`${API_BASE}/stock`).catch(()=>[])
+      ]);
+
+      const now = new Date(), startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const todaysSales = (payments||[]).filter(p=>p.status==='completed' && p.createdAt && new Date(p.createdAt)>=startToday).reduce((s,p)=> s + Number(p.amount||0), 0);
+      const pastSales   = (payments||[]).filter(p=>p.status==='completed' && p.createdAt && new Date(p.createdAt)< startToday).reduce((s,p)=> s + Number(p.amount||0), 0);
+      const pendingOrders = (orders||[]).filter(o=>o.status==='pending').length;
+      const lowCount = (stock||[]).filter(s=>Number(s.qty||0) <= Number(s.reorder||0)).length;
+
+      setKPI('kpiTodaySales', todaysSales);
+      setKPI('kpiPastSales', pastSales);
+      document.getElementById('kpiPendingOrders').textContent = String(pendingOrders||0);
+      document.getElementById('kpiLowStock').textContent = String(lowCount||0);
+
+      // Top product (simple pick by qty)
+      const top = (stock||[]).slice().sort((a,b)=>Number(b.qty||0)-Number(a.qty||0));
+      if(top){
+        document.getElementById('topProduct').textContent = top.name || 'Top Item';
+        document.getElementById('topQty').textContent = `${Number(top.qty||0)} in stock`;
+      }
+
+      return {payments, stock};
+    }
+
+    function initCharts(lineLabels, lineData, pieLabels, pieData){
+      const lctx=document.getElementById('salesLine');
+      if(lctx && window.Chart){
+        new Chart(lctx,{type:'line',
+          data:{labels:lineLabels,datasets:[{
+            label:'Sales',
+            data:lineData,
+            borderColor:'#8ec5ff',
+            backgroundColor:'rgba(142,197,255,.18)',
+            pointRadius:3,
+            tension:.35,                 // smooth curve
+            cubicInterpolationMode:'monotone',
+            fill:true
+          }]},
+          options:{
+            responsive:true, maintainAspectRatio:false, /* Larger canvas uses container height. [21] */
+            interaction:{mode:'index', intersect:false},
+            plugins:{legend:{display:false}, tooltip:{enabled:true}},
+            scales:{x:{ticks:{color:'#cfe1ff'}}, y:{ticks:{color:'#cfe1ff'}, beginAtZero:true}}
+          }
+        });
+      }
+
+      const pctx=document.getElementById('invPie');
+      if(pctx && window.Chart){
+        new Chart(pctx,{type:'doughnut',
+          data:{labels:pieLabels, datasets:[{data:pieData, backgroundColor:['#8ec5ff','#a78bfa','#34d399','#fbbf24','#f87171']}]},
+          options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:'#cfe1ff'}}}}
+        });
+      }
+    }
+
+    function aggregate7(payments){
+      const map={};
+      (payments||[]).forEach(p=>{
+        if(p.status!=='completed' || !p.createdAt) return;
+        const d=new Date(p.createdAt).toISOString().slice(0,10);
+        map[d]=(map[d]||0)+Number(p.amount||0);
+      });
+      const lbls = Object.keys(map).sort().slice(-7);
+      const data = lbls.map(k=>map[k]);
+      return lbls.length ? {labels:lbls, data} : {labels:dummyLabels, data:dummySales};
+    } /* Smooth line with fallback. [3][4] */
+
+    document.getElementById('globalSearch')?.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){ const q=e.target.value.trim(); if(q) location.href=`pastsales.html?q=${encodeURIComponent(q)}`; }
+    });
+    document.getElementById('addOrderBtn')?.addEventListener('click', ()=> location.href='orders.html');
+    document.getElementById('addProductBtn')?.addEventListener('click', ()=> location.href='inventory.html');
+
+    function revealCards() {
+      const io = new IntersectionObserver(entries=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold:.35 });
+      document.querySelectorAll('.card').forEach(c=>io.observe(c));
+    }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const {payments, stock} = await loadKPIs();
+      revealCards();
+
+      // Build chart inputs
+      const agg = aggregate7(payments);
+      const pieLabels = (stock||[]).slice(0,5).map(s=>s.name||'Item');
+      const pieData   = (stock||[]).slice(0,5).map(s=>Number(s.qty||0));
+      initCharts(agg.labels, agg.data, pieLabels.length?pieLabels:['A','B','C','D','E'], pieLabels.length?pieData:[30,20,18,16,12]);
+    });
+  </script>
+</body>
+</html>

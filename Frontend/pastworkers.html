@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Past Workers · Kanaklata Agency</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f6fa;}
+    .layout{display:flex;min-height:100vh;}
+    .sidebar{width:220px;background:#2c3e50;color:#fff;display:flex;flex-direction:column;}
+    .brand{font-size:18px;font-weight:bold;padding:16px;text-align:center;border-bottom:1px solid #34495e;}
+    .nav{flex:1;display:flex;flex-direction:column;}
+    .nav a{color:#ecf0f1;padding:12px 16px;text-decoration:none;display:block;}
+    .nav a:hover,.nav a.active{background:#34495e;}
+    .foot{padding:12px;text-align:center;font-size:12px;border-top:1px solid #34495e;}
+    .header{flex:1;background:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;}
+    .header h3{margin:0;}
+    .actions .btn{padding:8px 14px;border-radius:4px;background:#3498db;color:#fff;text-decoration:none;margin-left:6px;display:inline-block;}
+    .actions .btn.secondary{background:#7f8c8d;}
+    .main{flex:1;padding:20px;}
+    .panel{background:#fff;padding:16px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:14px;}
+    th{background:#f0f0f0;}
+    .avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;}
+    .btn{padding:6px 12px;border:none;border-radius:4px;background:#3498db;color:#fff;cursor:pointer;font-size:13px;}
+    .btn.secondary{background:#7f8c8d;}
+    .btn:hover{opacity:0.9;}
+    #certTemplate{font-family:Georgia,serif;background:#fff;padding:40px;border:2px solid #333;max-width:600px;margin:0 auto;}
+    #certTemplate h1{text-align:center;margin-bottom:20px;}
+    #certTemplate h3{margin:10px 0;}
+    .cert-row{display:flex;justify-content:space-between;margin-top:40px;}
+    .cert-seal{font-weight:bold;font-size:14px;}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Kanaklata Agency</div>
+    <nav class="nav">
+      <a href="adminindex.html">Dashboard</a>
+      <a class="active" href="workers.html">Workers</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="inventory.html">Inventory</a>
+      <a href="reports.html">Reports</a>
+      <a href="profiles.html">Profiles</a>
+      <a href="daily-sales.html">Daily Sales</a>
+    </nav>
+    <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column">
+    <header class="header">
+      <h3>Past Workers</h3>
+      <div class="actions">
+        <a class="btn" href="currentworkers.html">Current workers</a>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel">
+        <header><h3 style="margin:0">Former employees</h3></header>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>PP</th><th>Name</th><th>Aadhaar</th><th>Role</th><th>Period</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Experience certificate -->
+      <div id="certTemplate" style="display:none">
+        <h1>Experience Certificate</h1>
+        <h3 id="certName">This is to certify that</h3>
+        <p><strong id="certEmp"></strong> worked with Kanaklata Agency during the stated period and contributed professionally.</p>
+        <div class="cert-row">
+          <div>Issued on: <span id="certDate"></span></div>
+          <div class="cert-seal">KANAKLATA AGENCY</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function circle(src){
+    return `<img class="avatar" src="${src||'https://via.placeholder.com/64'}" alt="">`;
+  }
+
+  function load(){
+    const data = [
+      { pp:'https://i.pravatar.cc/64?img=7', firstName:'Amit', lastName:'Singh', aadhaar:'123412341234', role:'Driver', from:'2023-03-01', to:'2025-01-15' }
+    ];
+    const tb = document.querySelector('#tbl tbody');
+    tb.innerHTML = data.map(w=>{
+      const name=[w.firstName,w.middleName,w.lastName].filter(Boolean).join(' ');
+      return `<tr>
+        <td>${circle(w.pp)}</td>
+        <td>${name}</td>
+        <td>${w.aadhaar}</td>
+        <td>${w.role||'-'}</td>
+        <td>${new Date(w.from).toLocaleDateString()} → ${new Date(w.to).toLocaleDateString()}</td>
+        <td class="actions">
+          <button class="btn" onclick="downloadXP('${name}','${w.from}','${w.to}')">Experience PDF</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function downloadXP(name, from, to){
+    const wrap = document.getElementById('certTemplate');
+    document.getElementById('certEmp').textContent = name;
+    document.getElementById('certName').textContent = `Experience: ${name}`;
+    document.getElementById('certDate').textContent = new Date().toLocaleDateString();
+    wrap.style.display='block';
+    const opt={
+      filename:`Experience-${name}.pdf`,
+      html2canvas:{scale:2},
+      jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}
+    };
+    html2pdf().set(opt).from(wrap).save().then(()=>{
+      wrap.style.display='none';
+    });
+  }
+
+  load();
+</script>
+</body>
+</html>

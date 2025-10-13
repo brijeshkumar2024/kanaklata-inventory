@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kanaklata Agency · Secure Login</title>
+  <style>
+    :root {
+      --bg1:#0f172a; --bg2:#1e293b;
+      --grad1:#7c3aed; --grad2:#06b6d4; --grad3:#22c55e;
+      --card:rgba(255,255,255,0.08); --card-strong:rgba(255,255,255,0.10);
+      --text:#e5e7eb; --muted:#94a3b8;
+      --accent:#7c3aed; --accent-2:#06b6d4;
+      --danger:#ef4444; --success:#10b981; --warning:#f59e0b;
+      --ring:rgba(124,58,237,.25); --radius:18px;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow-x:hidden}
+    body{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 700px at 10% -10%, rgba(124,58,237,.25) 0%, transparent 60%),
+        radial-gradient(900px 650px at 110% 110%, rgba(6,182,212,.22) 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .scene{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+    .orb{ position:absolute; width:520px; height:520px; filter:blur(60px); opacity:.35;
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, var(--grad1), transparent 60%);
+      animation:float 16s ease-in-out infinite;
+    }
+    .orb.o2{ left:65%; top:10%; background:radial-gradient(circle at 70% 30%, var(--grad2), transparent 60%); animation-duration:18s;}
+    .orb.o3{ left:20%; bottom:-10%; background:radial-gradient(circle at 40% 60%, var(--grad3), transparent 60%); animation-duration:22s;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+    .wrap{ position:relative; z-index:1; display:grid; gap:22px; width:100%; max-width:1050px; grid-template-columns:1.1fr 1fr; }
+    @media (max-width:980px){ .wrap{grid-template-columns:1fr} }
+    .hero{ position:relative; overflow:hidden; border-radius:24px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.15); box-shadow:var(--shadow);
+      padding:28px; display:flex; flex-direction:column; justify-content:flex-end; min-height:560px; backdrop-filter:blur(10px);
+    }
+    .hero::after{ content:""; position:absolute; inset:0; pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(124,58,237,.18), transparent 30%),
+        linear-gradient(300deg, rgba(6,182,212,.14), transparent 40%);
+      mix-blend-mode:screen;
+    }
+    .badge{ align-self:flex-start; margin-bottom:10px; padding:6px 12px; font-size:12px; letter-spacing:.08em; border-radius:999px;
+      border:1px solid rgba(255,255,255,.25); color:#fff;
+      background:linear-gradient(135deg, rgba(124,58,237,.3), rgba(6,182,212,.25));
+      backdrop-filter:blur(6px);
+    }
+    .brand{ display:flex; align-items:center; gap:14px; margin-bottom:8px; }
+    .brand .logo{ width:64px; height:64px; border-radius:16px; display:grid; place-items:center;
+      background:linear-gradient(135deg, var(--grad1), var(--grad2));
+      box-shadow:0 10px 30px rgba(124,58,237,.35), inset 0 0 30px rgba(255,255,255,.2);
+      font-size:28px;
+    }
+    .brand h1{ font-size:clamp(24px,3.2vw,34px); font-weight:800; line-height:1.1 }
+    .tag{ color:#d1d5db; margin-top:6px; font-weight:600 }
+    .points{ margin-top:18px; color:var(--muted); line-height:1.7 }
+    .points li{ margin:6px 0; list-style:none; display:flex; gap:10px; align-items:center }
+    .points li::before{ content:"✔"; color:var(--success); }
+    .card{ position:relative; overflow:hidden; border-radius:24px;
+      background:var(--card); border:1px solid rgba(255,255,255,.15); box-shadow:var(--shadow);
+      backdrop-filter:blur(14px); padding:28px;
+    }
+    .card::before{ content:""; position:absolute; inset:0; pointer-events:none;
+      background:conic-gradient(from 180deg at 50% 50%, rgba(124,58,237,.18), rgba(6,182,212,.18), rgba(34,197,94,.14), transparent 60%);
+      filter:blur(50px); opacity:.35;
+    }
+    .secure-chip{ position:absolute; top:18px; right:18px; z-index:2; padding:6px 12px; font-size:12px; font-weight:700; border-radius:999px; color:#0f172a;
+      background:linear-gradient(135deg, #a7f3d0, #fef3c7); box-shadow:0 6px 18px rgba(16,185,129,.25); display:flex; align-items:center; gap:8px;
+    }
+    .tabs{ display:flex; gap:10px; margin:6px 0 18px 0; padding:6px; border-radius:14px;
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    }
+    .tab{ flex:1; padding:12px 14px; text-align:center; border-radius:10px; cursor:pointer;
+      font-weight:800; letter-spacing:.2px; color:#e2e8f0; background:transparent; border:1px solid transparent; transition:.25s ease;
+    }
+    .tab.active{ background:linear-gradient(135deg, var(--grad1), var(--grad2));
+      box-shadow:0 12px 28px rgba(124,58,237,.28);
+    }
+    .group{ margin:16px 0 }
+    label{ font-size:13px; color:#cbd5e1; margin-bottom:8px; display:block; font-weight:700; letter-spacing:.2px }
+    .input{ width:100%; padding:14px 14px 14px 46px; color:#fff;
+      border-radius:14px; border:1.5px solid rgba(255,255,255,.16);
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      outline:none; transition:.2s ease; position:relative;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .input:focus{ border-color:transparent;
+      box-shadow:0 0 0 6px var(--ring), inset 0 0 0 1px rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+    }
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px }
+    .row small{ color:var(--muted) }
+    .link{ color:#a5b4fc; text-decoration:none; font-weight:700 }
+    .link:hover{ color:#c7d2fe }
+    .field{ position:relative; }
+    .icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:.7; font-size:14px; }
+    .toggle{ position:absolute; right:12px; top:50%; transform:translateY(-50%); opacity:.75; cursor:pointer; }
+    .btn{ margin-top:14px; width:100%; padding:14px 18px; border:none; cursor:pointer; border-radius:14px; font-weight:900; letter-spacing:.3px; color:#0b1020;
+      background:linear-gradient(135deg, #a78bfa, #38bdf8 40%, #34d399); box-shadow:0 14px 36px rgba(56,189,248,.28); transition:.22s ease;
+    }
+    .logo { padding: 6px; }
+    .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+    .btn:hover{ transform:translateY(-2px); filter:brightness(1.05) }
+    .btn:active{ transform:translateY(0) }
+    .msg{ display:none; margin-top:12px; padding:12px; border-radius:12px; font-weight:700 }
+    .msg.error{ background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.25); color:#fecaca }
+    .msg.ok{ background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.25); color:#bbf7d0 }
+    footer{ margin-top:14px; text-align:center; color:var(--muted); font-size:12px }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="orb o1" style="left:-8%; top:-6%"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+  </div>
+  <main class="wrap" aria-label="Kanaklata Agency Login">
+    <!-- Left -->
+    <section class="hero">
+      <span class="badge">KANAKLATA AGENCY</span>
+      <div class="brand">
+        <div class="logo"><img src="logo.png" alt="Kanaklata Agency Logo" class="logo-img" /></div>
+        <div>
+          <h1>One in the Market</h1>
+          <div class="tag">Ultra-secure, modern admin portal</div>
+        </div>
+      </div>
+      <ul class="points">
+        <li>Server-side authentication (no client secrets)</li>
+        <li>HttpOnly, Secure, SameSite cookies</li>
+        <li>Strict CSP with nonce</li>
+      </ul>
+      <footer>© <span id="y"></span> Kanaklata Agency - All Rights Reserved</footer>
+    </section>
+
+    <!-- Right -->
+    <section class="card" role="form" aria-labelledby="title">
+      <div class="secure-chip">🔐 Secured</div>
+      <h2 id="title" style="font-size:26px; font-weight:900; margin-bottom:6px;">Secure Sign In</h2>
+      <div class="tabs" aria-label="Choose portal">
+        <button class="tab active" id="tabAdmin" type="button" data-type="admin">Admin Portal</button>
+        <button class="tab" id="tabUser" type="button" data-type="user">User Portal</button>
+      </div>
+
+      <!-- CSRF token injected by server -->
+      <meta name="csrf-token" content="__CSRF_TOKEN_FROM_SERVER__" />
+
+      <form id="loginForm" novalidate>
+        <div class="group">
+          <label for="email">Email Address</label>
+          <div class="field">
+            <span class="icon">📧</span>
+            <input id="email" class="input" type="email" placeholder="admin@kanaklata.com" autocomplete="username" required />
+          </div>
+        </div>
+        <div class="group">
+          <label for="password">Password</label>
+          <div class="field">
+            <span class="icon">🔑</span>
+            <input id="password" class="input" type="password" placeholder="- - - - - - - -" minlength="8" autocomplete="current-password" required />
+            <button class="toggle" id="togglePwd" type="button" title="Show/Hide">👁️</button>
+          </div>
+        </div>
+        <div class="row">
+          <small>SSL Protected</small>
+          <a href="#" class="link" id="forgot">Forgot password?</a>
+        </div>
+        <button class="btn" id="submitBtn" type="submit">Secure Sign In</button>
+        <div class="msg ok" id="okMsg">✅ Login successful! Redirecting…</div>
+        <div class="msg error" id="errMsg">❌ Invalid credentials. Please try again.</div>
+      </form>
+    </section>
+  </main>
+
+<script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Tabs
+    const tabs = document.querySelectorAll('.tab');
+    let currentType = 'admin';
+    tabs.forEach(t=>{
+      t.addEventListener('click', ()=>{
+        tabs.forEach(s=>s.classList.remove('active'));
+        t.classList.add('active');
+        currentType = t.dataset.type;
+        document.getElementById('email').placeholder =
+          currentType==='admin' ? 'admin@kanaklata.com' : 'user@kanaklata.com';
+      });
+    });
+
+    // Toggle password
+    document.getElementById('togglePwd').addEventListener('click', ()=>{
+      const p = document.getElementById('password');
+      p.type = p.type === 'password' ? 'text' : 'password';
+    });
+
+    // Messages
+    const okMsg = document.getElementById('okMsg');
+    const errMsg = document.getElementById('errMsg');
+
+    // IMPORTANT: Backend is HTTP in dev, so use http:// (not https://)
+    const API_BASE = 'http://192.168.56.1:8080';
+
+    async function doLogin(email, password, portal){
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      const res = await fetch(`${API_BASE}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf
+        },
+        credentials: 'include', // send/receive cookies cross-origin
+        body: JSON.stringify({ email, password, portal })
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(()=>({ message:'Invalid credentials'}));
+        throw new Error(e.message || 'Invalid credentials');
+      }
+      return res.json();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      okMsg.style.display = 'none';
+      errMsg.style.display = 'none';
+
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+
+      if(!email || !pass){
+        errMsg.textContent = '❌ Please fill all fields.';
+        errMsg.style.display = 'block';
+        return;
+      }
+
+      try{
+        const data = await doLogin(email, pass, currentType);
+        okMsg.style.display = 'block';
+        setTimeout(()=>{
+          const redirectTo = (data?.role === 'admin' || currentType==='admin')
+            ? 'adminindex.html'
+            : 'userindex.html';
+          location.replace(redirectTo);
+        }, 900);
+      }catch(err){
+        errMsg.textContent = `❌ ${err.message}`;
+        errMsg.style.display = 'block';
+      }
+    });
+
+    document.getElementById('forgot').addEventListener('click',(e)=>{
+      e.preventDefault();
+      location.assign('/forgot-password');
+    });
+  </script>
+</body>
+</html>

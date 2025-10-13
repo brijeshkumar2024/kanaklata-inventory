@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workers · Kanaklata Agency</title>
+  <link rel="stylesheet" href="./admin.css" />
+  <style>
+    :root{
+      --ink:#435e83; --muted:#24529d;
+      --accent:#6ea8ff; --accent-600:#3f7ee6;
+      --panel: rgba(255,255,255,.10);
+      --glass: rgba(255,255,255,.12);
+      --ring:#7aa2ff; --r:16px; --r-lg:22px;
+      --border: 1px solid rgba(255,255,255,.16);
+      --shadow: 0 22px 50px rgba(0,0,0,.35);
+    }
+
+    /* Page background (premium Deep Navy) */
+    body{
+      background:
+        radial-gradient(1200px 800px at 10% 15%, rgba(20,30,48,.45) 0%, transparent 55%),
+        radial-gradient(1000px 650px at 90% 10%, rgba(36,59,85,.40) 0%, transparent 60%),
+        linear-gradient(135deg, #141E30 0%, #243B55 100%);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    } /* Curated gradient family for premium UI. [web:438] */
+
+    /* Whitespace-filling effects */
+    .fx{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+    .blob{
+      position:absolute; width:44vmax; height:44vmax; border-radius:50%;
+      filter:blur(60px); opacity:.18; mix-blend-mode:screen;
+      background: radial-gradient(closest-side, rgba(52,78,123,.85), transparent 70%);
+      animation: blobFloat 26s ease-in-out infinite alternate;
+    } /* Glass-friendly motion background. [web:382] */
+    .blob.b1{left:-12%; top:-8%}
+    .blob.b2{left:56%; top:2%; background:radial-gradient(closest-side, rgba(36,99,160,.85), transparent 70%); animation-delay:-6s}
+    .blob.b3{left:20%; bottom:-12%; background:radial-gradient(closest-side, rgba(24,144,255,.75), transparent 70%); animation-delay:-12s}
+    @keyframes blobFloat{0%{transform:translate3d(0,0,0) scale(1)}40%{transform:translate3d(2%,-3%,0) scale(1.03)}100%{transform:translate3d(-2%,2%,0) scale(1.05)}} /* Smooth loop. [web:399] */
+
+    .orb{
+      position:absolute; width:28vmax; height:28vmax; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(97,113,155,.45), transparent 60%);
+      filter:blur(50px); opacity:.28; animation: orbDrift 32s linear infinite;
+    }
+    .orb.o1{left:74%; top:66%}
+    .orb.o2{left:-6%; top:42%; animation-duration:38s; opacity:.22}
+    @keyframes orbDrift{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(3%,-2%,0)}100%{transform:translate3d(0,0,0)}} /* Gentle parallax. [web:400] */
+
+    .fx__dots{
+      position:absolute; inset:0; opacity:.14;
+      background-image: radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1px);
+      background-size: 12px 12px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 70%, transparent 100%);
+              mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 70%, transparent 100%);
+    } /* Subtle dotted grid texture. [web:422] */
+
+    /* Layout skeleton (sidebar/header come from admin.css) */
+    .layout{position:relative; z-index:1}
+    .header h3{color:#dce7ff}
+
+    /* Main container glass layer */
+    .main{
+      position:relative; z-index:1; padding:22px;
+    }
+
+    /* Workers hero with glassmorphism + shimmer sweep */
+    .workers-hero{
+      background: var(--glass);
+      backdrop-filter: blur(18px);
+      border: var(--border);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp .8s ease-out;
+    } /* Frosted card with premium contrast. [web:382] */
+    .workers-hero::before{
+      content:""; position:absolute; inset:0; transform: translateX(-100%);
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,.14), transparent);
+      animation: shimmer 3s infinite;
+      mix-blend-mode:soft-light;
+    } /* Lightweight sheen overlay. [web:450] */
+    @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+    .workers-hero h1{
+      margin:0 0 .8rem 0; font-size: clamp(2rem, 3.8vw, 3rem); font-weight:800;
+      background: linear-gradient(135deg,#6ea8ff,#3f7ee6,#38bdf8);
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    } /* Gradient headline on glass. [web:435] */
+    .workers-hero .subtitle{margin:0; font-size:1.05rem; color:#3a66ac}
+
+    /* Stats */
+    .stats-grid{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:22px; margin-bottom:24px; position:relative; z-index:1;
+      animation: fadeInUp .8s ease-out .05s both;
+    }
+    .header h3 {
+  color: #121212; /* Change this to any color code you want, e.g., black = #000, red = #e53935, etc. */
+}
+.user{
+  color: black;
+}
+    .stat-card{
+      position:relative; background: var(--panel);
+      border: var(--border); border-radius:20px; padding:1.6rem 1.4rem;
+      backdrop-filter: blur(14px) saturate(140%);
+      transition: transform .22s ease, box-shadow .22s ease, filter .22s ease, opacity .45s ease;
+      overflow:hidden; box-shadow: 0 16px 40px rgba(0,0,0,.28);
+      transform-style: preserve-3d; will-change: transform, filter, box-shadow, opacity;
+      opacity:0; transform: translateY(10px);
+    }
+    .stat-card.is-in{opacity:1; transform: translateY(0)}
+    .stat-card::before{
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:0;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,0) 40% 60%, rgba(255,255,255,.15) 100%),
+        conic-gradient(from 180deg at 50% 50%, rgba(255,255,255,.07), rgba(255,255,255,0) 30%);
+      mix-blend-mode:soft-light; transition:opacity .25s ease;
+    } /* Shimmer sweep. [web:399] */
+    .stat-card:hover::before{opacity:.9}
+    .stat-card:hover{transform:translateY(-6px) rotate3d(1,-1,0,6deg) scale(1.01); filter:saturate(1.05); box-shadow:0 20px 50px rgba(0,0,0,.35)} /* Tilt. [web:400] */
+
+    .stat-icon{
+      width:58px; height:58px; margin:0 auto .8rem; border-radius:16px;
+      display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#0b1220;
+      transform: translateZ(20px);
+    }
+    .stat-card:nth-child(1) .stat-icon{ background:linear-gradient(135deg,#10b981,#059669)}
+    .stat-card:nth-child(2) .stat-icon{ background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+    .stat-card:nth-child(3) .stat-icon{ background:linear-gradient(135deg,#f59e0b,#d97706)}
+    .stat-card:nth-child(4) .stat-icon{ background:linear-gradient(135deg,#ef4444,#dc2626)}
+
+    .stat-number{font-size:2.3rem; font-weight:900; color:#eaf1ff; text-align:center}
+    .stat-label{color:#b8c5da; text-transform:uppercase; font-weight:700; letter-spacing:.06em; font-size:.85rem; text-align:center}
+
+    /* Action cards (glass + top gradient bar) */
+    .action-cards{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+      gap:24px; margin-bottom:24px; animation: fadeInUp .8s ease-out .1s both;
+    }
+    .action-card{
+      background: var(--glass); border: var(--border); border-radius:24px;
+      padding:2.2rem; backdrop-filter: blur(18px); position:relative; overflow:hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+      box-shadow: var(--shadow);
+    }
+    .action-card::after{
+      content:""; position:absolute; left:0; top:0; width:100%; height:4px;
+      transform:scaleX(0); transform-origin:left; transition: transform .35s ease;
+    }
+    .action-card:hover{transform: translateY(-10px); box-shadow:0 30px 60px rgba(0,0,0,.32)}
+    .action-card:hover::after{transform:scaleX(1)}
+    .add-card::after{background:linear-gradient(90deg,#10b981,#059669)}
+    .current-card::after{background:linear-gradient(90deg,#3b82f6,#1d4ed8)}
+    .past-card::after{background:linear-gradient(90deg,#f59e0b,#d97706)}
+
+    .card-icon{
+      width:78px; height:78px; border-radius:20px; display:flex; align-items:center; justify-content:center;
+      font-size:2.2rem; margin-bottom:1.2rem; color:#061020; transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
+    }
+    .add-card .card-icon{background:linear-gradient(135deg,#10b981,#059669); color:#fff}
+    .current-card .card-icon{background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff}
+    .past-card .card-icon{background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff}
+    .action-card:hover .card-icon{transform: rotateY(180deg) scale(1.06)}
+
+    .action-card h4{margin:0 0 .6rem 0; font-size:1.35rem; font-weight:800; color:#eaf1ff}
+    .action-card p{margin:0 0 1.4rem 0; color:#b8c5da; line-height:1.65}
+    .action-card .btn{
+      width:100%; padding:1rem 1.4rem; border-radius:12px; font-weight:700; font-size:1rem;
+      text-decoration:none; text-align:center; border:none; cursor:pointer; position:relative; overflow:hidden;
+      color:#061020; transition: filter .25s ease, transform .2s ease;
+    }
+    .action-card .btn::before{
+      content:""; position:absolute; top:50%; left:50%; width:0; height:0; background:rgba(255,255,255,.28);
+      border-radius:50%; transform:translate(-50%,-50%); transition: width .3s ease, height .3s ease;
+    }
+    .action-card .btn:hover::before{width:300px; height:300px}
+    .add-card .btn{background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 15px rgba(16,185,129,.3)}
+    .current-card .btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; box-shadow:0 4px 15px rgba(59,130,246,.3)}
+    .past-card .btn{background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 4px 15px rgba(245,158,11,.3)}
+
+    /* Quick panel */
+    .quick-panel{
+      background: var(--panel); border: var(--border); border-radius:20px; padding:1.6rem;
+      backdrop-filter: blur(14px); box-shadow:0 16px 40px rgba(0,0,0,.28); animation: fadeInUp .8s ease-out .15s both;
+    }
+    .quick-panel h3{margin:0 0 1rem 0; color:#dce7ff; font-size:1.2rem; font-weight:800}
+    .quick-links{display:flex; gap:12px; flex-wrap:wrap}
+    .quick-link{
+      padding:.75rem 1.2rem; background: rgba(255,255,255,.10); border-radius:10px; text-decoration:none;
+      color:#d6e3ff; font-size:.9rem; font-weight:700; border:1px solid rgba(229,231,235,.25); transition:.25s ease;
+      backdrop-filter: blur(10px);
+    }
+    .quick-link:hover{background:linear-gradient(135deg,#6ea8ff,#3f7ee6); color:#061020; transform:translateY(-2px); box-shadow:0 8px 20px rgba(110,168,255,.28)}
+
+    /* Motion */
+    @keyframes fadeInUp{from{opacity:0; transform:translateY(30px)}to{opacity:1; transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <!-- Background effects -->
+  <div class="fx">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <span class="orb o1"></span>
+    <span class="orb o2"></span>
+    <div class="fx__dots"></div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Kanaklata Agency</div>
+      <nav class="nav">
+        <a href="adminindex.html">Dashboard</a>
+        <a class="active" href="workers.html">Workers</a>
+        <a href="orders.html">Orders</a>
+        <a href="payments.html">Payments</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="reports.html">Reports</a>
+        <a href="profiles.html">Profiles</a>
+        <a href="daily-sales.html">Daily Sales</a>
+      </nav>
+      <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+    </aside>
+
+    <header class="header">
+      <h3 color="black">Workers Management</h3>
+      <div class="user"><span class="badge">Admin</span></div>
+    </header>
+
+    <main class="main">
+      <div class="workers-hero">
+        <h1>👥 Workers Hub</h1>
+        <p class="subtitle">Streamline workforce operations with precision and care</p>
+      </div>
+
+      <section class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">👔</div>
+          <div class="stat-number" data-target="24">0</div>
+          <div class="stat-label">Active Workers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🆕</div>
+          <div class="stat-number" data-target="8">0</div>
+          <div class="stat-label">New This Month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-number" data-target="156">0</div>
+          <div class="stat-label">Total Hired</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-number" data-target="12">0</div>
+          <div class="stat-label">Former Staff</div>
+        </div>
+      </section>
+
+      <section class="action-cards">
+        <div class="action-card add-card">
+          <div class="card-icon">➕</div>
+          <h4>Add New Worker</h4>
+          <p>Register a new employee with complete profile details, credentials, and assignments.</p>
+          <a class="btn" href="addworker.html">Create Profile</a>
+        </div>
+
+        <div class="action-card current-card">
+          <div class="card-icon">👥</div>
+          <h4>Current Workers</h4>
+          <p>View active employees, edit credentials, and download welcome certificates.</p>
+          <a class="btn" href="currentworkers.html">Manage Active Staff</a>
+        </div>
+
+        <div class="action-card past-card">
+          <div class="card-icon">📜</div>
+          <h4>Past Workers</h4>
+          <p>Browse former employees and generate professional experience certificates.</p>
+          <a class="btn" href="pastworkers.html">View History</a>
+        </div>
+      </section>
+
+      <section class="quick-panel">
+        <h3>⚡ Quick Actions</h3>
+        <div class="quick-links">
+          <a href="reports.html" class="quick-link">📊 Worker Reports</a>
+          <a href="profiles.html" class="quick-link">🔧 Bulk Operations</a>
+          <a href="adminindex.html" class="quick-link">🏠 Dashboard</a>
+          <a href="#" class="quick-link">📤 Export Data</a>
+          <a href="#" class="quick-link">🔍 Advanced Search</a>
+          <a href="#" class="quick-link">📅 Schedule Review</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./shared.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Intersection observers: reveal cards and animate counters only when visible
+    function revealStats() {
+      const io = new IntersectionObserver(entries=>{
+        entries.forEach(e=>{
+          if(!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        });
+      }, { threshold: .35 });
+
+      document.querySelectorAll('.stat-card').forEach(c=>io.observe(c));
+    } /* Reveal-on-scroll for stat cards. [web:400] */
+
+    function animateCountersOnView() {
+      const io2 = new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(!entry.isIntersecting) return;
+          const el = entry.target.querySelector('.stat-number');
+          const target = Number(el.getAttribute('data-target') || 0);
+          let start = 0; const dur = 900; const t0 = performance.now();
+          const step = t=>{
+            const p = Math.min((t - t0)/dur, 1);
+            const v = Math.floor(start + (target - start) * p);
+            el.textContent = String(v);
+            if(p < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+          io2.unobserve(entry.target);
+        });
+      }, { threshold: .6 });
+
+      document.querySelectorAll('.stat-card').forEach(card=>io2.observe(card));
+    } /* Count-up only when stats grid enters view. [web:400] */
+
+    // Kickoff after DOM
+    document.addEventListener('DOMContentLoaded', ()=>{
+      revealStats();
+      animateCountersOnView();
+    });
+  </script>
+</body>
+</html>
