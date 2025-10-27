@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kanaklata Agency · Admin Dashboard (Pro)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<style>
+  :root{
+    --ink:#eaf1ff; --muted:#a7b3c6; --accent:#7aa2ff; --accent-2:#a78bfa;
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --ring:#86b0ff; --glow:rgba(110,168,255,.25);
+    --panel:rgba(10,16,32,.66); --card:rgba(255,255,255,.06);
+    --border:1px solid rgba(255,255,255,.16); --r:20px;
+    --shadow:0 28px 64px rgba(0,0,0,.38); --inset:18px; --gap:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    color:var(--ink); background:
+      radial-gradient(1200px 800px at 12% 10%, rgba(67,99,170,.30) 0%, transparent 55%),
+      radial-gradient(900px 620px at 88% 8%, rgba(70,120,180,.26) 0%, transparent 58%),
+      linear-gradient(135deg, #0E1625 0%, #1E304B 100%);
+    min-height:100vh; overflow-x:hidden; padding:22px;
+  }
+
+  /* Header */
+  .hero{max-width:1240px;margin:0 auto 18px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .hero-left{display:flex; align-items:center; gap:10px}
+  .back{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:12px; text-decoration:none; color:#eaf1ff; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16)}
+  .back:hover{background:rgba(255,255,255,.14)}
+  .back:focus-visible{outline:3px solid var(--ring); outline-offset:4px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .badge{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
+  .search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(110,168,255,.25);border-radius:12px;padding:8px 12px;min-width:260px}
+  .search input{border:none;outline:none;background:transparent;color:#eaf1ff;width:100%}
+  .cta{padding:10px 14px;border:none;border-radius:12px;font-weight:800;background:linear-gradient(135deg,#7aa2ff,#a78bfa);color:#07111f;cursor:pointer}
+
+  .shell{max-width:1240px;margin:0 auto;display:grid;gap:18px}
+
+  /* KPI Tiles (Premium) */
+  .kpis{display:grid; grid-template-columns:repeat(4, minmax(240px,1fr)); gap:18px}
+  @media (max-width:1100px){ .kpis{grid-template-columns:repeat(2,minmax(240px,1fr))} }
+  @media (max-width:620px){ .kpis{grid-template-columns:1fr} }
+
+  .pro-tile{
+    position:relative; overflow:hidden; border-radius:22px; min-height:220px;
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    backdrop-filter:blur(18px) saturate(140%); box-shadow:var(--shadow);
+  }
+  .pro-tile::before{
+    content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
+    background:linear-gradient(135deg, rgba(122,162,255,.75), rgba(167,139,250,.75));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .pro-tile::after{
+    content:""; position:absolute; right:-24px; top:-24px; width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(122,162,255,.28), transparent 60%); filter:blur(10px);
+  }
+  .pro-in{position:relative; z-index:1; height:100%; padding:18px; display:flex; flex-direction:column; justify-content:space-between}
+  .k-head{display:flex; align-items:center; justify-content:space-between; gap:10px}
+  .k-head h4{font-size:12px; letter-spacing:.12em; color:#bcd0f7; text-transform:uppercase}
+  .ico{font-size:28px}
+  .k-num{font-size:56px; font-weight:900; line-height:1.05}
+  .k-row{display:flex; align-items:center; justify-content:space-between}
+  .delta{padding:6px 10px; border-radius:999px; font-size:12px; font-weight:800; border:1px solid rgba(110,168,255,.35); background:rgba(110,168,255,.18)}
+  .trend{font-size:12px; color:#b0c2ea}
+  .shine{position:absolute; inset:-40%; transform:rotate(12deg); background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.22) 50%, transparent 100%); filter:blur(22px); opacity:0; transition:opacity .25s ease, transform .25s ease}
+  .pro-tile:hover .shine{opacity:.9; transform:rotate(12deg) translateX(12%)}
+
+  /* Charts and side */
+  .grid{display:grid; grid-template-columns:2fr 1fr; gap:18px}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+  .card{background:rgba(255,255,255,.06); border:var(--border); border-radius:20px; padding:16px; box-shadow:var(--shadow)}
+  .card h3{font-size:14px; letter-spacing:.08em; color:#d8e5ff; text-transform:uppercase}
+  .chart{height:380px}
+
+  .list{display:flex; flex-direction:column; gap:10px; margin-top:10px; max-height:300px; overflow:auto}
+  .item{display:flex; gap:10px; align-items:center; padding:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:12px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#7aa2ff}
+
+  /* Actions */
+  .actions{display:grid; grid-template-columns:repeat(4,minmax(200px,1fr)); gap:14px}
+  @media (max-width:980px){ .actions{grid-template-columns:repeat(2,minmax(200px,1fr))} }
+  @media (max-width:560px){ .actions{grid-template-columns:1fr} }
+  .act{display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; color:#eaf1ff; padding:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; font-weight:800}
+
+
+.foot{
+  max-width:unset; width:100%;
+  margin:22px auto 0; padding:18px 0;
+  display:flex; align-items:center; justify-content:center; /* center align */
+  background:transparent; border-top:0; /* remove old line */
+}
+
+.foot__btn{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 16px; font-size:13px; font-weight:800; color:#eaf1ff; text-decoration:none;
+  border-radius:999px;
+  /* button-like texture */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)),
+    radial-gradient(120% 120% at 20% 0%, rgba(122,162,255,.25), transparent 60%);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.18); /* subtle inner highlight */
+  transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+}
+
+.foot__btn:hover{
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)),
+    radial-gradient(120% 120% at 20% 0%, rgba(122,162,255,.32), transparent 60%);
+}
+
+.foot__btn:active{
+  transform:translateY(1px);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.foot__btn:focus-visible{
+  outline:3px solid #86b0ff; /* ring */
+  outline-offset:4px;
+}
+
+.foot__btn .ico{font-size:16px; line-height:1}
+
+</style>
+</head>
+<body>
+  <!-- Header with Back -->
+  <div class="hero">
+    <div class="hero-left">
+      <a class="back" href="adminindex.html" aria-label="Back to main">
+        <span>←</span><span>Back to Main</span>
+      </a>
+      <div class="brand">Kanaklata Agency <span class="badge">Admin</span></div>
+    </div>
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9bb1d6" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input id="q" placeholder="Search orders, products…" />
+    </div>
+    <button class="cta" id="newOrder">+ Add Order</button>
+  </div>
+
+  <div class="shell">
+    <!-- KPI Squares -->
+    <section class="kpis" aria-label="KPIs">
+      <article class="pro-tile" aria-labelledby="t1">
+        <div class="shine"></div>
+        <div class="pro-in">
+          <div class="k-head"><h4 id="t1">Today’s Sales</h4><span class="ico">💸</span></div>
+          <div class="k-num">₹<span id="kpiTodaySales">0</span></div>
+          <div class="k-row"><span class="trend" id="tToday">vs yesterday</span><span class="delta" id="kpiTodayDelta">₹0</span></div>
+        </div>
+      </article>
+
+      <article class="pro-tile" aria-labelledby="t2">
+        <div class="shine"></div>
+        <div class="pro-in">
+          <div class="k-head"><h4 id="t2">Past Sales</h4><span class="ico">📈</span></div>
+          <div class="k-num">₹<span id="kpiPastSales">0</span></div>
+          <div class="k-row"><span class="trend">prev days</span><span class="delta" id="kpiPastDelta">₹0</span></div>
+        </div>
+      </article>
+
+      <article class="pro-tile" aria-labelledby="t3">
+        <div class="shine"></div>
+        <div class="pro-in">
+          <div class="k-head"><h4 id="t3">Pending Orders</h4><span class="ico">⏳</span></div>
+          <div class="k-num" id="kpiPendingOrders">0</div>
+          <div class="k-row"><span class="trend">awaiting processing</span><span class="delta" id="kpiPendingDelta">—</span></div>
+        </div>
+      </article>
+
+      <article class="pro-tile" aria-labelledby="t4">
+        <div class="shine"></div>
+        <div class="pro-in">
+          <div class="k-head"><h4 id="t4">Low Stock</h4><span class="ico">⚠️</span></div>
+          <div class="k-num" id="kpiLowStock">0</div>
+          <div class="k-row"><span class="trend">items to restock</span><span class="delta" style="border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.20);color:#ffe29a">Check</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Charts + side -->
+    <section class="grid" aria-label="Charts and updates">
+      <article class="card">
+        <h3>Sales Trend (7 days)</h3>
+        <canvas id="salesLine" class="chart"></canvas>
+      </article>
+      <article class="card">
+        <h3>Top Product</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+          <div style="font-size:22px;font-weight:900" id="topProduct">—</div>
+          <span class="delta" id="topQty">0 sold</span>
+        </div>
+        <canvas id="invPie" style="width:100%;height:220px;margin-top:6px"></canvas>
+        <div class="list" aria-label="Notices">
+          <div class="item"><span class="dot"></span><div>System ready</div></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Quick actions -->
+    <section aria-label="Quick actions" class="actions">
+      <a class="act" href="orders.html">New Order</a>
+      <a class="act" href="inventory.html">Open Inventory</a>
+      <a class="act" href="reports.html">Download Report</a>
+      <a class="act" href="bills.html">Generate Bill</a>
+    </section>
+  </div>
+
+  <!-- Footer with back link -->
+  <div class="foot">
+    <div>© <span id="y"></span> Kanaklata Agency</div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    const API_BASE = 'http://localhost:8080/api';
+    const INR = n => Number(n||0).toLocaleString('en-IN');
+
+    async function j(url){ const r = await fetch(url,{credentials:'include'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+    const dummyLabels = Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); return d.toISOString().slice(0,10); });
+    const dummySales  = [100,250,90,320,180,400,230];
+
+    function setKPI(id, val){ const el=document.getElementById(id); if(el) el.textContent = INR(val||0); }
+
+    async function loadData(){
+      const [orders, payments, stock] = await Promise.all([
+        j(`${API_BASE}/orders`).catch(()=>[]),
+        j(`${API_BASE}/payments`).catch(()=>[]),
+        j(`${API_BASE}/stock`).catch(()=>[])
+      ]);
+
+      const now=new Date(), startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      const todays=(payments||[]).filter(p=>p.status==='completed'&&p.createdAt&&new Date(p.createdAt)>=startToday).reduce((s,p)=>s+Number(p.amount||0),0);
+      const past  =(payments||[]).filter(p=>p.status==='completed'&&p.createdAt&&new Date(p.createdAt)< startToday).reduce((s,p)=>s+Number(p.amount||0),0);
+      const pend  =(orders||[]).filter(o=>o.status==='pending').length;
+      const low   =(stock||[]).filter(s=>Number(s.qty||0)<=Number(s.reorder||0)).length;
+
+      setKPI('kpiTodaySales', todays);
+      setKPI('kpiPastSales', past);
+      document.getElementById('kpiPendingOrders').textContent = String(pend||0);
+      document.getElementById('kpiLowStock').textContent = String(low||0);
+
+      const top=(stock||[]).slice().sort((a,b)=>Number(b.qty||0)-Number(a.qty||0))[0];
+      if(top){ document.getElementById('topProduct').textContent = top.name || 'Top Item'; document.getElementById('topQty').textContent = `${Number(top.qty||0)} in stock`; }
+
+      return {payments, stock};
+    }
+
+    function aggregate7(payments){
+      const map={};
+      (payments||[]).forEach(p=>{
+        if(p.status!=='completed'||!p.createdAt) return;
+        const d=new Date(p.createdAt).toISOString().slice(0,10);
+        map[d]=(map[d]||0)+Number(p.amount||0);
+      });
+      const lbls=Object.keys(map).sort().slice(-7);
+      const data=lbls.map(k=>map[k]);
+      return lbls.length?{labels:lbls,data}:{labels:dummyLabels,data:dummySales};
+    }
+
+    function initCharts(lineLabels,lineData,pieLabels,pieData){
+      const l=document.getElementById('salesLine');
+      if(l&&window.Chart){
+        new Chart(l,{type:'line',
+          data:{labels:lineLabels,datasets:[{label:'Sales',data:lineData,borderColor:'#7aa2ff',backgroundColor:'rgba(122,162,255,.18)',pointRadius:3,tension:.35,fill:true}]},
+          options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#cfe1ff'}}, y:{ticks:{color:'#cfe1ff'}, beginAtZero:true}}});
+      }
+      const p=document.getElementById('invPie');
+      if(p&&window.Chart){
+        new Chart(p,{type:'doughnut',
+          data:{labels:pieLabels, datasets:[{data:pieData, backgroundColor:['#7aa2ff','#a78bfa','#34d399','#fbbf24','#f87171']}]},
+          options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:'#cfe1ff'}}}}});
+      }
+    }
+
+    document.getElementById('q')?.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) location.href=`pastsales.html?q=${encodeURIComponent(v)}`; }
+    });
+    document.getElementById('newOrder')?.addEventListener('click', ()=> location.href='orders.html');
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const {payments, stock}=await loadData();
+      const agg=aggregate7(payments);
+      const pieLabels=(stock||[]).slice(0,5).map(s=>s.name||'Item');
+      const pieData  =(stock||[]).slice(0,5).map(s=>Number(s.qty||0));
+      initCharts(agg.labels, agg.data, pieLabels.length?pieLabels:['A','B','C','D','E'], pieLabels.length?pieData:[30,20,18,16,12]);
+    });
+  </script>
+</body>
+</html>

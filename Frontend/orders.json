@@ -1,0 +1,47 @@
+[
+  {
+    "id": "ORD-001",
+    "customer": "Rajesh Kumar",
+    "products": "Rice (50kg), Dal (10kg)",
+    "total": 2500,
+    "status": "delivered",
+    "date": "2025-09-10",
+    "phone": "9876543210"
+  },
+  {
+    "id": "ORD-002",
+    "customer": "Priya Sharma",
+    "products": "Wheat Flour (25kg)",
+    "total": 1200,
+    "status": "shipped",
+    "date": "2025-09-11",
+    "phone": "9876543211"
+  },
+  {
+    "id": "ORD-003",
+    "customer": "Amit Singh",
+    "products": "Oil (5L), Sugar (5kg)",
+    "total": 800,
+    "status": "processing",
+    "date": "2025-09-12",
+    "phone": "9876543212"
+  },
+  {
+    "id": "ORD-004",
+    "customer": "Sunita Devi",
+    "products": "Spices Pack, Salt (1kg)",
+    "total": 450,
+    "status": "pending",
+    "date": "2025-09-12",
+    "phone": "9876543213"
+  },
+  {
+    "id": "ORD-005",
+    "customer": "Vikram Yadav",
+    "products": "Tea (500g), Biscuits",
+    "total": 300,
+    "status": "cancelled",
+    "date": "2025-09-09",
+    "phone": "9876543214"
+  }
+]

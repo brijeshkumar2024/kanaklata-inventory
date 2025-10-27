@@ -6,438 +6,125 @@
   <title>Orders · Kanaklata Agency</title>
   <link rel="stylesheet" href="./admin.css" />
   <style>
-    /* Modern gradient background */
-    .main {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
+    body, .main {
+      background: radial-gradient(1350px circle at 25% 20%, #273043 0%, #1B202A 90%) !important;
+      color: #e5e7eb;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
-
-    /* Floating particles animation */
-    .main::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
+    .sidebar {
+      background: rgba(22, 26, 37, 0.94);
+      box-shadow: 0 0 24px 0 rgba(0,0,0,0.25);
     }
-
-    /* Hero section */
-    .orders-hero {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
-      padding: 2.5rem 2rem;
-      margin-bottom: 2rem;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
+    .orders-panel, .orders-hero, .stats-grid .stat-card, .action-bar {
+      background: rgba(33,37,50,0.86) !important;
+      color: #e5e7eb !important;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.20);
     }
-
-    .orders-hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -50%;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-      transform: translateX(-100%);
-      animation: shimmer 3s infinite;
+    .orders-table th, .orders-table td {
+      background: transparent !important;
+      color: #e5e7eb !important;
+      border-bottom: 1px solid rgba(153,153,160,0.13);
     }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+    .orders-table tbody tr:hover {
+      background: rgba(59,130,246,0.08) !important;
     }
-
-    .orders-hero h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #3b82f6, #10b981, #f59e0b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      position: relative;
-      z-index: 2;
+    input, select, textarea {
+      background: rgba(44,48,64,0.88);
+      border: 1px solid #3b4261;
+      color: #e5e7eb;
+      border-radius: 7px;
+      margin-bottom: 7px;
+      padding: 9px 12px;
     }
-
-    .orders-hero .subtitle {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #6b7280;
-      position: relative;
-      z-index: 2;
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #3b82f6;
     }
-
-    /* Stats grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 16px;
-      padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    }
-
     .stat-icon {
-      width: 48px;
-      height: 48px;
+      width: 76px;
+      height: 76px;
       margin: 0 auto 1rem;
-      border-radius: 12px;
+      border-radius: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      transition: transform 0.3s ease;
+      font-size: 2.7rem;
+      background: inherit;
+      transition: transform 0.22s cubic-bezier(.22,1,.36,1), box-shadow 0.22s;
+      box-shadow: 0 0 0 rgba(59,130,246,0);
     }
-
-    .stat-card:hover .stat-icon {
-      transform: scale(1.1);
+    /* Stat card hover effect */
+    .stat-card:hover .stat-icon, .stat-card:focus .stat-icon {
+      transform: scale(1.13) rotate(7deg);
+      box-shadow: 0 0 0 6px #7fcff944, 0 10px 22px #3b82f6de;
+      filter: brightness(1.15) drop-shadow(0 0 4px #3b82f6b6);
     }
-
-    .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-    .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #10b981, #059669); }
-    .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
-
-    .stat-number {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-label {
-      color: #6b7280;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Action buttons */
-    .action-bar {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-    }
-
-    .search-box {
-      position: relative;
-      flex: 1;
-      max-width: 400px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 0.75rem 1rem 0.75rem 3rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-    }
-
-    .search-box input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      outline: none;
-    }
-
-    .search-box::before {
-      content: '🔍';
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1rem;
-      z-index: 1;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-action {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
+    /* Action Button Icons */
+    .btn-action .icon {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      position: relative;
-      overflow: hidden;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-right: 0.67em;
+      transition: transform 0.22s cubic-bezier(.22,1,.36,1), box-shadow 0.22s;
     }
-
+    .btn-action:hover .icon, .btn-action:focus .icon {
+      transform: scale(1.18) rotate(10deg);
+      box-shadow: 0 6px 21px rgba(59,130,246,0.23), 0 2px 2px rgba(130,186,255,0.06);
+      filter: brightness(1.25) drop-shadow(0 0 3px #3b82f673);
+    }
     .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: white;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      background: linear-gradient(90deg, #2363eb 0%, #4a7ce8 100%) !important;
+      color: #FFF !important;
+      border: none !important;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.13);
     }
-
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.8);
-      color: #374151;
-      border: 1px solid #e5e7eb;
+      background: rgba(255,255,255,.14);
+      color: #e5e7eb !important;
+      border: 1px solid rgba(255,255,255,.12);
     }
-
     .btn-success {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      background: linear-gradient(90deg, #17c29e 0%, #36a6d8 100%) !important;
+      color: #fff !important;
+      border: none !important;
     }
-
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    .modal-overlay {
+      position: fixed; top:0; left:0; width:100vw; height:100vh;
+      background: rgba(16,22,32,0.42); z-index:99999;
+      display: flex; align-items: center; justify-content: center;
     }
-
-    /* Orders table */
-    .orders-panel {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 0;
-      margin-bottom: 2rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    .modal-content {
+      background: rgba(33,37,50,0.94);
+      padding: 2.1rem 2rem 1.6rem;
+      border-radius: 17px;
+      min-width: 320px; max-width: 95vw;
+      box-shadow: 0 10px 38px rgba(0,0,0,.30);
+      color: #e5e7eb;
+      font-size: 1rem;
+    }
+    /* Search icon in input */
+    .search-box {
       position: relative;
-      z-index: 1;
-      overflow: hidden;
     }
-
-    .panel-header {
-      padding: 2rem 2rem 1rem;
-      border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+    .search-box input {
+      padding-left: 2.5em !important;
     }
-
-    .panel-header h3 {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #1f2937;
+    .search-box .icon-search {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5em;
+      color: #2363eb;
+      background: none;
+      text-shadow: 0 2px 8px #3b82f689;
+      filter: drop-shadow(0 0 2px #7fcff9);
+      pointer-events: none;
     }
-
-    .orders-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .orders-table th {
-      padding: 1rem 1.5rem;
-      text-align: left;
-      font-weight: 600;
-      color: #374151;
-      background: rgba(249, 250, 251, 0.8);
-      border-bottom: 2px solid rgba(229, 231, 235, 0.3);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .orders-table td {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid rgba(229, 231, 235, 0.2);
-      color: #4b5563;
-      font-size: 0.9rem;
-    }
-
-    .orders-table tbody tr {
-      transition: all 0.3s ease;
-    }
-
-    .orders-table tbody tr:hover {
-      background: rgba(59, 130, 246, 0.05);
-      transform: scale(1.001);
-    }
-
-    /* Status badges */
-    .status-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .status-pending {
-      background: rgba(245, 158, 11, 0.1);
-      color: #d97706;
-      border: 1px solid rgba(245, 158, 11, 0.2);
-    }
-
-    .status-processing {
-      background: rgba(59, 130, 246, 0.1);
-      color: #1d4ed8;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-    }
-
-    .status-shipped {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    .status-delivered {
-      background: rgba(34, 197, 94, 0.1);
-      color: #15803d;
-      border: 1px solid rgba(34, 197, 94, 0.2);
-    }
-
-    .status-cancelled {
-      background: rgba(239, 68, 68, 0.1);
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    /* Action buttons in table */
-    .table-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .btn-small {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-    }
-
-    .btn-view {
-      background: rgba(59, 130, 246, 0.1);
-      color: #1d4ed8;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-    }
-
-    .btn-edit {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    .btn-delete {
-      background: rgba(239, 68, 68, 0.1);
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    .btn-small:hover {
-      transform: scale(1.05);
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: #6b7280;
-    }
-
-    .empty-icon {
+    .empty-state .empty-icon {
       font-size: 4rem;
       margin-bottom: 1rem;
-    }
-
-    /* Filters */
-    .filters {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .filter-select {
-      padding: 0.5rem 1rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .orders-hero {
-      animation: fadeInUp 0.8s ease-out;
-    }
-
-    .stat-card {
-      animation: fadeInUp 0.8s ease-out;
-      animation-fill-mode: both;
-    }
-
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-    .orders-panel {
-      animation: fadeInUp 0.8s ease-out;
-      animation-delay: 0.5s;
-      animation-fill-mode: both;
+      opacity: .7;
     }
   </style>
 </head>
@@ -462,49 +149,49 @@
       <h3>Orders Management</h3>
       <div class="user"><span class="badge">Admin</span></div>
     </header>
-
     <main class="main">
       <div class="orders-hero">
         <h1>📋 Orders Hub</h1>
         <p class="subtitle">Manage customer orders from creation to delivery</p>
       </div>
 
-      <div class="stats-grid">
+      <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; position: relative; z-index: 2;">
         <div class="stat-card">
-          <div class="stat-icon">📝</div>
-          <div class="stat-number" data-target="156">0</div>
+          <div class="stat-icon" style="background: linear-gradient(135deg,#3b82f6, #1d4ed8);"><span>📝</span></div>
+          <div class="stat-number" id="order-count">0</div>
           <div class="stat-label">Total Orders</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-number" data-target="23">0</div>
+          <div class="stat-icon" style="background: linear-gradient(135deg,#f59e0b,#d97706);"><span>⏳</span></div>
+          <div class="stat-number" id="pending-count">0</div>
           <div class="stat-label">Pending</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
-          <div class="stat-number" data-target="98">0</div>
-          <div class="stat-label">Completed</div>
+          <div class="stat-icon" style="background: linear-gradient(135deg,#36a6d8, #17c29e);"><span>✨</span></div>
+          <div class="stat-number" id="new-count">0</div>
+          <div class="stat-label">New Orders</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div class="stat-number" data-target="45600">0</div>
+          <div class="stat-icon" style="background: linear-gradient(135deg,#ef4444,#dc2626);"><span>💰</span></div>
+          <div class="stat-number" id="value-count">0</div>
           <div class="stat-label">Total Value (₹)</div>
         </div>
       </div>
 
-      <div class="action-bar">
-        <div class="search-box">
-          <input type="text" id="searchOrders" placeholder="Search orders by ID, customer, or product..." />
+      <div class="action-bar" style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+        <div class="search-box" style="flex:1; min-width:250px;">
+          <span class="icon-search">🔍</span>
+          <input type="text" id="searchOrders" placeholder="Search orders by ID, customer, or product..." style="width:100%;" />
         </div>
-        <div class="action-buttons">
-          <button class="btn-action btn-primary" onclick="createOrder()">
-            ➕ New Order
+        <div class="action-buttons" style="display: flex; gap: 1rem; align-items: center;">
+          <button class="btn-action btn-primary" id="addOrderBtn" onclick="createOrder()">
+            <span class="icon">➕</span> New Order
           </button>
           <button class="btn-action btn-secondary" onclick="exportOrders()">
-            📤 Export
+            <span class="icon">📤</span> Export
           </button>
           <button class="btn-action btn-success" onclick="refreshOrders()">
-            🔄 Refresh
+            <span class="icon">🔄</span> Refresh
           </button>
         </div>
       </div>
@@ -529,7 +216,6 @@
             </select>
           </div>
         </div>
-
         <table class="orders-table" id="ordersTable">
           <thead>
             <tr>
@@ -543,10 +229,9 @@
             </tr>
           </thead>
           <tbody id="ordersTableBody">
-            <!-- Orders will be populated here -->
+            <!-- Orders will populate here -->
           </tbody>
         </table>
-
         <div class="empty-state" id="emptyState" style="display: none;">
           <div class="empty-icon">📦</div>
           <h3>No Orders Found</h3>
@@ -555,258 +240,299 @@
       </div>
     </main>
   </div>
+<script>
+let ordersData = [];
+let filteredOrders = [];
 
-  <script src="./shared.js"></script>
-  <script>
-    // Sample orders data
-    const ordersData = [
-      {
-        id: 'ORD-001',
-        customer: 'Rajesh Kumar',
-        products: 'Rice (50kg), Dal (10kg)',
-        total: 2500,
-        status: 'delivered',
-        date: '2025-09-10',
-        phone: '9876543210'
-      },
-      {
-        id: 'ORD-002',
-        customer: 'Priya Sharma',
-        products: 'Wheat Flour (25kg)',
-        total: 1200,
-        status: 'shipped',
-        date: '2025-09-11',
-        phone: '9876543211'
-      },
-      {
-        id: 'ORD-003',
-        customer: 'Amit Singh',
-        products: 'Oil (5L), Sugar (5kg)',
-        total: 800,
-        status: 'processing',
-        date: '2025-09-12',
-        phone: '9876543212'
-      },
-      {
-        id: 'ORD-004',
-        customer: 'Sunita Devi',
-        products: 'Spices Pack, Salt (1kg)',
-        total: 450,
-        status: 'pending',
-        date: '2025-09-12',
-        phone: '9876543213'
-      },
-      {
-        id: 'ORD-005',
-        customer: 'Vikram Yadav',
-        products: 'Tea (500g), Biscuits',
-        total: 300,
-        status: 'cancelled',
-        date: '2025-09-09',
-        phone: '9876543214'
-      }
-    ];
+document.getElementById("y").textContent = new Date().getFullYear();
 
-    let filteredOrders = [...ordersData];
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('orders.json')
+    .then(r => r.json())
+    .then(data => {
+      ordersData = data;
+      filteredOrders = [...ordersData];
       renderOrders();
       animateCounters();
       setupSearchFilter();
     });
+});
 
-    // Animate counter numbers
-    function animateCounters() {
-      const counters = document.querySelectorAll('.stat-number');
-      
-      counters.forEach((counter) => {
-        const target = parseInt(counter.getAttribute('data-target'));
-        const duration = 2000;
-        const increment = target / (duration / 16);
-        let current = 0;
-        
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
-          }
-          counter.textContent = Math.floor(current);
-        }, 16);
-      });
-    }
+function animateCounters() {
+  document.getElementById('order-count').textContent = ordersData.length;
+  document.getElementById('pending-count').textContent = ordersData.filter(o=>o.status==="pending").length;
+  document.getElementById('new-count').textContent = ordersData.filter(o=>o.status==="processing"||o.status==="shipped").length;
+  document.getElementById('value-count').textContent = ordersData.reduce((s,o)=>s+parseFloat(o.total),0);
+}
 
-    // Render orders table
-    function renderOrders() {
-      const tbody = document.getElementById('ordersTableBody');
-      const emptyState = document.getElementById('emptyState');
-      
-      if (filteredOrders.length === 0) {
-        tbody.innerHTML = '';
-        emptyState.style.display = 'block';
-        return;
+function renderOrders() {
+  const tbody = document.getElementById('ordersTableBody');
+  const emptyState = document.getElementById('emptyState');
+  if (filteredOrders.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+  tbody.innerHTML = filteredOrders.map(order => `
+    <tr>
+      <td><strong>${order.id}</strong></td>
+      <td>
+        <div>${order.customer}</div>
+        <small style="color: #aaa;">${order.phone}</small>
+      </td>
+      <td>${order.products}</td>
+      <td><strong>₹${order.total}</strong></td>
+      <td>
+        <span class="status-badge status-${order.status}">${order.status}</span>
+      </td>
+      <td>${new Date(order.date).toLocaleDateString()}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn-small btn-view" onclick="openModal('view', '${order.id}')">👁️ View</button>
+          <button class="btn-small btn-edit" onclick="openModal('edit', '${order.id}')">✏️ Edit</button>
+          <button class="btn-small btn-delete" onclick="deleteOrder('${order.id}')">🗑️ Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function setupSearchFilter() {
+  const searchInput = document.getElementById('searchOrders');
+  searchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    filteredOrders = ordersData.filter(order =>
+      order.id.toLowerCase().includes(searchTerm) ||
+      order.customer.toLowerCase().includes(searchTerm) ||
+      order.products.toLowerCase().includes(searchTerm)
+    );
+    applyStatusFilter();
+    renderOrders();
+  });
+}
+
+// Filtering helpers
+function filterOrders() {
+  const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+  filteredOrders = ordersData.filter(order =>
+    order.id.toLowerCase().includes(searchTerm) ||
+    order.customer.toLowerCase().includes(searchTerm) ||
+    order.products.toLowerCase().includes(searchTerm)
+  );
+  applyStatusFilter();
+  renderOrders();
+}
+function applyStatusFilter() {
+  const statusFilter = document.getElementById('statusFilter').value;
+  const dateFilter = document.getElementById('dateFilter').value;
+  if (statusFilter) {
+    filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+  }
+  if (dateFilter) {
+    const today = new Date();
+    filteredOrders = filteredOrders.filter(order => {
+      const oDate = new Date(order.date);
+      switch (dateFilter) {
+        case 'today':
+          return oDate.toDateString() === today.toDateString();
+        case 'week':
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return oDate >= weekAgo;
+        case 'month':
+          return oDate.getMonth() === today.getMonth() && oDate.getFullYear() === today.getFullYear();
+        default:
+          return true;
       }
-      
-      emptyState.style.display = 'none';
-      tbody.innerHTML = filteredOrders.map(order => `
-        <tr>
-          <td><strong>${order.id}</strong></td>
-          <td>
-            <div>${order.customer}</div>
-            <small style="color: #6b7280;">${order.phone}</small>
-          </td>
-          <td>${order.products}</td>
-          <td><strong>₹${order.total}</strong></td>
-          <td>
-            <span class="status-badge status-${order.status}">
-              ${order.status}
-            </span>
-          </td>
-          <td>${new Date(order.date).toLocaleDateString()}</td>
-          <td>
-            <div class="table-actions">
-              <button class="btn-small btn-view" onclick="viewOrder('${order.id}')">
-                👁️ View
-              </button>
-              <button class="btn-small btn-edit" onclick="editOrder('${order.id}')">
-                ✏️ Edit
-              </button>
-              <button class="btn-small btn-delete" onclick="deleteOrder('${order.id}')">
-                🗑️ Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
+    });
+  }
+}
 
-    // Setup search functionality
-    function setupSearchFilter() {
-      const searchInput = document.getElementById('searchOrders');
-      
-      searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        
-        filteredOrders = ordersData.filter(order => 
-          order.id.toLowerCase().includes(searchTerm) ||
-          order.customer.toLowerCase().includes(searchTerm) ||
-          order.products.toLowerCase().includes(searchTerm)
-        );
-        
-        applyStatusFilter();
-        renderOrders();
-      });
+// Modal utilities
+function showModal(content) {
+  let modal = document.getElementById('modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal';
+    modal.innerHTML = `<div class='modal-content'>${content}</div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.innerHTML = `<div class='modal-content'>${content}</div>`;
+    modal.style.display = 'flex';
+  }
+}
+function closeModal() {
+  const modal = document.getElementById('modal');
+  if (modal) modal.style.display = 'none';
+}
+function openModal(type, orderId) {
+  const order = ordersData.find(o => o.id === orderId);
+  let modalContent = '';
+  if (type === 'view') {
+    modalContent = `
+      <h3 style="margin-bottom:12px;">Order Details (ID: ${order.id})</h3>
+      <p><b>Customer:</b> ${order.customer} (${order.phone})<br>
+      <b>Products:</b> ${order.products}<br>
+      <b>Total:</b> ₹${order.total}<br>
+      <b>Status:</b> ${order.status}<br>
+      <b>Date:</b> ${new Date(order.date).toLocaleDateString()}</p>
+      <button onclick="closeModal()" class="btn-primary">Close</button>
+    `;
+  } else if (type === 'edit') {
+    modalContent = `
+      <h3>Edit Order: ${order.id}</h3>
+      <form id="editOrderForm">
+        <input id="editCustomer" value="${order.customer}" required><br>
+        <input id="editPhone" value="${order.phone}" required><br>
+        <textarea id="editProducts" required>${order.products}</textarea><br>
+        <input id="editTotal" value="${order.total}" type="number" required><br>
+        <select id="editStatus" required>
+          <option ${order.status==='pending'?'selected':''}>pending</option>
+          <option ${order.status==='processing'?'selected':''}>processing</option>
+          <option ${order.status==='shipped'?'selected':''}>shipped</option>
+          <option ${order.status==='delivered'?'selected':''}>delivered</option>
+          <option ${order.status==='cancelled'?'selected':''}>cancelled</option>
+        </select><br>
+        <input id="editDate" value="${order.date}" type="date" required><br>
+        <button type="submit" class="btn-primary">Save</button>
+        <button type="button" onclick="closeModal()" class="btn-secondary" style="margin-left:10px;">Cancel</button>
+      </form>
+    `;
+  }
+  showModal(modalContent);
+  if (type === 'edit') {
+    document.getElementById('editOrderForm').onsubmit = function(e) {
+      e.preventDefault();
+      saveEdit(order.id);
     }
+  }
+}
+function saveEdit(orderId) {
+  const idx = ordersData.findIndex(o => o.id === orderId);
+  if (idx > -1) {
+    const prevStatus = ordersData[idx].status;
+    ordersData[idx].customer = document.getElementById('editCustomer').value;
+    ordersData[idx].phone = document.getElementById('editPhone').value;
+    ordersData[idx].products = document.getElementById('editProducts').value;
+    ordersData[idx].total = parseFloat(document.getElementById('editTotal').value);
+    ordersData[idx].status = document.getElementById('editStatus').value;
+    ordersData[idx].date = document.getElementById('editDate').value;
+    filteredOrders = [...ordersData];
+    renderOrders();
+    animateCounters();
+    closeModal();
+    alert('✅ Changes saved!');
+    // WhatsApp send if delivered
+    if (prevStatus !== 'delivered' && ordersData[idx].status === 'delivered') {
+      sendWhatsappReceipt(ordersData[idx]);
+    }
+  }
+}
+function sendWhatsappReceipt(order) {
+  // Construct order summary/receipt text
+  const message = `Order Delivered!\n`
+    + `Order ID: ${order.id}\n`
+    + `Customer: ${order.customer}\n`
+    + `Products: ${order.products}\n`
+    + `Total: ₹${order.total}\n`
+    + `Date: ${new Date(order.date).toLocaleDateString()}\n`
+    + "RECEIPT / INVOICE: [Download link or see admin panel]";
+  // WhatsApp API link (opens chat prefilled to the recipient)
+  const whatsappNumber = "918328988365";
+  const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
 
-    // Filter orders by status
-    function filterOrders() {
-      const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
-      
-      // First apply search filter
-      filteredOrders = ordersData.filter(order => 
-        order.id.toLowerCase().includes(searchTerm) ||
-        order.customer.toLowerCase().includes(searchTerm) ||
-        order.products.toLowerCase().includes(searchTerm)
-      );
-      
-      // Then apply status filter
-      applyStatusFilter();
+// New Order modal
+function createOrder() {
+  const today = (new Date()).toISOString().split('T')[0];
+  const modalContent = `
+    <h3 style="margin-bottom:1.2rem;">New Order</h3>
+    <form id="newOrderForm">
+      <input required placeholder="Customer name" id="newCustomer" style="width:90%;margin-bottom:12px;"><br>
+      <input required placeholder="Phone" id="newPhone" style="width:90%;margin-bottom:12px;"><br>
+      <textarea required placeholder="Products" id="newProducts" style="width:90%;margin-bottom:12px;"></textarea><br>
+      <input required type="number" placeholder="Total Amount" id="newTotal" style="width:90%;margin-bottom:12px;"><br>
+      <select id="newStatus" style="width:92%;margin-bottom:12px;">
+        <option value="pending">pending</option>
+        <option value="processing">processing</option>
+        <option value="shipped">shipped</option>
+        <option value="delivered">delivered</option>
+        <option value="cancelled">cancelled</option>
+      </select><br>
+      <input required type="date" id="newDate" style="width:90%;margin-bottom:12px;" value="${today}"><br>
+      <button type="submit" class="btn-primary">Save Order</button>
+      <button type="button" onclick="closeModal()" class="btn-secondary" style="margin-left:10px;">Cancel</button>
+    </form>
+  `;
+  showModal(modalContent);
+  document.getElementById('newOrderForm').onsubmit = function(e) {
+    e.preventDefault();
+    const newOrder = {
+      id: "ORD-" + String(ordersData.length + 1).padStart(3, '0'),
+      customer: document.getElementById('newCustomer').value,
+      phone: document.getElementById('newPhone').value,
+      products: document.getElementById('newProducts').value,
+      total: parseFloat(document.getElementById('newTotal').value),
+      status: document.getElementById('newStatus').value,
+      date: document.getElementById('newDate').value
+    };
+    ordersData.push(newOrder);
+    filteredOrders = [...ordersData];
+    renderOrders();
+    animateCounters();
+    closeModal();
+    alert('✅ New order added!');
+  };
+}
+// Delete & Export actions
+function deleteOrder(orderId) {
+  if (confirm(`🗑️ Delete Order ${orderId}?\n\nAre you sure you want to delete this order?`)) {
+    const index = ordersData.findIndex(o => o.id === orderId);
+    if (index > -1) {
+      ordersData.splice(index, 1);
+      filteredOrders = [...ordersData];
       renderOrders();
+      animateCounters();
+      alert('✅ Order deleted successfully!');
     }
-
-    // Apply status filter
-    function applyStatusFilter() {
-      const statusFilter = document.getElementById('statusFilter').value;
-      const dateFilter = document.getElementById('dateFilter').value;
-      
-      if (statusFilter) {
-        filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
-      }
-      
-      if (dateFilter) {
-        const today = new Date();
-        const orderDate = new Date();
-        
-        filteredOrders = filteredOrders.filter(order => {
-          const oDate = new Date(order.date);
-          
-          switch(dateFilter) {
-            case 'today':
-              return oDate.toDateString() === today.toDateString();
-            case 'week':
-              const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-              return oDate >= weekAgo;
-            case 'month':
-              return oDate.getMonth() === today.getMonth() && 
-                     oDate.getFullYear() === today.getFullYear();
-            default:
-              return true;
-          }
-        });
-      }
-    }
-
-    // Order actions
-    function createOrder() {
-      alert('🚀 New Order Creation Form\n\nThis would open a modal or navigate to order creation page.');
-    }
-
-    function viewOrder(orderId) {
-      const order = ordersData.find(o => o.id === orderId);
-      alert(`📋 Order Details\n\nID: ${order.id}\nCustomer: ${order.customer}\nProducts: ${order.products}\nTotal: ₹${order.total}\nStatus: ${order.status}\nDate: ${order.date}`);
-    }
-
-    function editOrder(orderId) {
-      alert(`✏️ Edit Order ${orderId}\n\nThis would open the order editing form.`);
-    }
-
-    function deleteOrder(orderId) {
-      if (confirm(`🗑️ Delete Order ${orderId}?\n\nAre you sure you want to delete this order? This action cannot be undone.`)) {
-        const index = ordersData.findIndex(o => o.id === orderId);
-        if (index > -1) {
-          ordersData.splice(index, 1);
-          filteredOrders = [...ordersData];
-          renderOrders();
-          alert('✅ Order deleted successfully!');
-        }
-      }
-    }
-
-    function exportOrders() {
-      const csvContent = [
-        ['Order ID', 'Customer', 'Products', 'Total', 'Status', 'Date'],
-        ...filteredOrders.map(order => [
-          order.id, order.customer, order.products, 
-          order.total, order.status, order.date
-        ])
-      ].map(row => row.join(',')).join('\n');
-      
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
-      alert('📤 Export Complete!\n\nOrders data has been exported to CSV file.');
-    }
-
-    function refreshOrders() {
-      // Simulate API call
-      const refreshButton = event.target;
-      refreshButton.innerHTML = '🔄 Refreshing...';
-      refreshButton.disabled = true;
-      
-      setTimeout(() => {
-        filteredOrders = [...ordersData];
-        renderOrders();
-        refreshButton.innerHTML = '🔄 Refresh';
-        refreshButton.disabled = false;
-        alert('✅ Orders refreshed successfully!');
-      }, 1000);
-    }
-  </script>
+  }
+}
+function exportOrders() {
+  const csvContent = [
+    ['Order ID', 'Customer', 'Products', 'Total', 'Status', 'Date'],
+    ...filteredOrders.map(order => [
+      order.id,
+      order.customer,
+      order.products,
+      order.total,
+      order.status,
+      order.date
+    ])
+  ].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+  alert('📤 Export complete! CSV file downloaded.');
+}
+function refreshOrders() {
+  const refreshButton = event.target;
+  refreshButton.innerHTML = '🔄 Refreshing...';
+  refreshButton.disabled = true;
+  setTimeout(() => {
+    filteredOrders = [...ordersData];
+    renderOrders();
+    animateCounters();
+    refreshButton.innerHTML = '🔄 Refresh';
+    refreshButton.disabled = false;
+    alert('✅ Orders refreshed successfully!');
+  }, 800);
+}
+</script>
 </body>
 </html>
