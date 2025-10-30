@@ -1,11 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generate Bill · Kanaklata Agency</title>
+<link rel="stylesheet" href="./admin.css">
+<link rel="stylesheet" href="./print.css" media="print">
+<style>
+  :root{
+    --bg:#0c111b; --ink:#e6e9f0; --muted:#9aa6c0; --line:#22283a; --ring:#5aa3ff;
+    --card:#151a27; --card2:#1a2030; --accent:#6aa2ff; --ok:#16c79a; --danger:#ef5a5a;
+    --field:#20273a; --field-2:#1c2333; --glow:0 10px 30px rgba(0,0,0,.35);
+  }
+  body,.main{background:radial-gradient(1200px circle at 25% 18%, #1f2a44 0%, var(--bg) 90%)!important;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  .sidebar{padding:1rem;background:#0f1522eb;box-shadow:0 0 24px rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:space-between}
+  .brand{font-weight:700;margin-bottom:8px}
+  .nav a{display:block;padding:.6rem .6rem;border-radius:10px;color:var(--ink);text-decoration:none}
+  .nav a:hover{background:rgba(255,255,255,.06)}
+  .nav a.active{color:#9fc6ff;background:rgba(90,163,255,.12)}
+  .page{max-width:1200px;margin:0 auto}
+  .header{position:sticky;top:0;z-index:6;padding:1rem 1.25rem;background:#111728c0;backdrop-filter:blur(8px);border-bottom:1px solid #1e2740}
+  .card{background:linear-gradient(180deg,var(--card) 0%, var(--card2) 100%);border:1px solid #1f2742;border-radius:18px;box-shadow:var(--glow);padding:1rem;margin:18px 0}
+  h2{font-size:1.2rem;margin:.2rem 0 1rem;letter-spacing:.2px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .input{position:relative}
+  .input input,.input select{
+    width:100%; background:linear-gradient(180deg,var(--field) 0%, var(--field-2) 100%);
+    border:1px solid #2a3452; color:var(--ink); border-radius:12px; padding:14px 12px 10px; outline:none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 0 0 rgba(90,163,255,0);
+    transition:border .18s, box-shadow .18s, transform .06s;
+  }
+  .input input::placeholder{color:#6d7a96}
+  .input input:focus,.input select:focus{border-color:#4f8fff; box-shadow:0 0 0 3px #4f8fff2b, inset 0 1px 0 rgba(255,255,255,.06)}
+  .input label{
+    position:absolute; left:12px; top:10px; font-size:.86rem; color:#8ea2c7; pointer-events:none; transition:all .15s;
+    background:transparent; padding:0 6px; border-radius:6px;
+  }
+  .input input:focus + label,.input input:not(:placeholder-shown)+label,.input select:focus + label{
+    top:-9px; left:10px; font-size:.74rem; color:#aedaff; background:#1a2030; border:1px solid #2a3452;
+  }
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start}
+  .btn{padding:.62rem .9rem;border-radius:10px;border:1px solid #2a3552;cursor:pointer;display:inline-flex;align-items:center;gap:.55rem;background:#1b2234; color:#cfe2ff}
+  .btn:hover{box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .btn-primary{background:linear-gradient(90deg,#2a72ff,#6aa2ff);border:0;color:#fff;box-shadow:0 8px 18px rgba(90,163,255,.22)}
+  .btn-danger{background:linear-gradient(90deg,#3a2024,#3a2024); border-color:#4b2a32; color:#ffbdbd}
+  .table{width:100%;border-collapse:separate;border-spacing:0}
+  .table th,.table td{padding:12px 10px;border-bottom:1px solid #273150}
+  .table thead th{position:sticky;top:0;background:#141a2b;z-index:2;color:#b9c7e3}
+  .table tbody tr:hover{background:#18213a}
+  .table input{width:100px;background:linear-gradient(180deg,var(--field) 0%, var(--field-2) 100%);border:1px solid #2a3452;color:var(--ink);border-radius:8px;padding:8px 10px}
+  .right{text-align:right}
+  .total-box{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+  .summary{position:sticky;top:92px;background:linear-gradient(180deg,#121827 0%, #111725 100%);border:1px solid #222c48;border-radius:14px;padding:14px;box-shadow:var(--glow)}
+  .summary .row{display:flex;justify-content:space-between;margin:.35rem 0;color:#cdd9f0}
+  .summary .sep{border-top:1px dashed #2d3858;margin:.6rem 0}
+  .summary .big{font-size:1.28rem;font-weight:700;color:#ffffff}
+  .picker{position:relative}
+  .picker-list{position:absolute;left:0;right:0;top:100%;background:#111829; border:1px solid #223054;border-radius:12px;max-height:260px;overflow:auto;z-index:20;display:none;box-shadow:0 10px 28px rgba(0,0,0,.45)}
+  .picker-item{padding:10px 12px;display:flex;justify-content:space-between;gap:10px;cursor:pointer;color:#d9e6ff}
+  .picker-item small{color:#9bb0d7}
+  .picker-item:hover{background:#18223a}
+  @media (max-width: 980px){
+    .layout{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
+    .total-box{grid-template-columns:1fr}
+  }
+  @media print{
+    .sidebar,.header,.toolbar{display:none!important}
+    body{background:#fff!important}
+    .card{box-shadow:none;margin:0;padding:0}
+  }
+</style>
 </head>
 <body>
-    
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Kanaklata Agency</div>
+    <nav class="nav">
+      <a href="adminindex.html">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="inventory.html">Inventory</a>
+      <a href="reports.html">Reports</a>
+      <a href="profiles.html">Profiles</a>
+      <a class="active" href="bills.html">Generate Bill</a>
+    </nav>
+    <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <header class="header"><h3>Generate Bill</h3></header>
+
+      <section class="card">
+        <h2>🧾 Invoice Details</h2>
+        <div class="grid2">
+          <div class="input"><input id="custName" placeholder=" "><label>Customer Name</label></div>
+          <div class="input"><input id="custPhone" placeholder=" "><label>Phone</label></div>
+          <div class="input"><input id="custAddr" placeholder=" "><label>Address</label></div>
+          <div class="input"><input id="billDate" type="date" placeholder=" "><label>Bill Date</label></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>📦 Add Items</h2>
+        <div class="grid2">
+          <div class="picker input" style="grid-column:1/-1">
+            <input id="itemSearch" placeholder=" "><label>Search item by name or SKU</label>
+            <div id="pickerList" class="picker-list"></div>
+          </div>
+          <div class="grid2" style="grid-template-columns:1fr 1fr">
+            <div class="input"><input id="qty" type="number" placeholder=" "><label>Qty</label></div>
+            <div class="input"><input id="rate" type="number" step="0.01" placeholder=" "><label>Rate</label></div>
+          </div>
+          <div class="grid2" style="grid-template-columns:1fr 1fr">
+            <div class="input"><input id="tax" type="number" placeholder=" "><label>Tax %</label></div>
+            <div class="input"><input id="discount" type="number" placeholder=" " value="0"><label>Line Discount %</label></div>
+          </div>
+          <div class="toolbar" style="grid-column:1/-1">
+            <button class="btn btn-primary" onclick="addLine()">➕ Add line</button>
+            <button class="btn" onclick="clearPicker()">✖ Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="total-box">
+          <div>
+            <table class="table">
+              <thead><tr>
+                <th style="width:24%">Item</th>
+                <th>SKU</th>
+                <th class="right">Qty</th>
+                <th class="right">Rate</th>
+                <th class="right">Tax %</th>
+                <th class="right">Disc %</th>
+                <th class="right">Amount</th>
+                <th class="right">Actions</th>
+              </tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="summary">
+            <div class="row"><span>Subtotal</span><strong id="s_sub">₹0.00</strong></div>
+            <div class="row"><span>Tax</span><strong id="s_tax">₹0.00</strong></div>
+            <div class="row"><span>Discount</span><strong id="s_disc">₹0.00</strong></div>
+            <div class="sep"></div>
+            <div class="row"><span class="big">Total</span><strong id="s_total" class="big">₹0.00</strong></div>
+            <div class="grid2" style="grid-template-columns:1fr 1fr;margin-top:.6rem">
+              <div class="input"><input id="paid" type="number" placeholder=" "><label>Paid amount</label></div>
+              <div class="input"><input id="due" type="text" placeholder=" " disabled><label>Due</label></div>
+            </div>
+            <div class="toolbar" style="justify-content:flex-end;margin-top:.6rem">
+              <button class="btn" onclick="saveDraft()">💾 Save</button>
+              <button class="btn btn-primary" onclick="printBill()">🖨 Print</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="printArea" class="card" style="display:none;background:#fff;color:#111"></section>
+    </div>
+  </main>
+</div>
+
+<script>
+const store = { get:(k,f)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(f)), set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)) };
+const Inventory = { list(){ return store.get('inv_items', []); }, find(q){ q=q.toLowerCase(); return this.list().filter(i=>i.name.toLowerCase().includes(q)||i.sku.toLowerCase().includes(q)); } };
+const Sales = { list(){ return store.get('sales', []); }, save(s){ const xs=this.list(); xs.push(s); store.set('sales', xs); } };
+
+document.getElementById('y') && (document.getElementById('y').textContent = new Date().getFullYear());
+billDate.value = new Date().toISOString().split('T')[0];
+
+let selectedItem=null, lines=[];
+
+// Picker
+const search = itemSearch, list = document.getElementById('pickerList');
+search.addEventListener('input', e=>{
+  const q=e.target.value.trim(); if(!q){ list.style.display='none'; return; }
+  const res=Inventory.find(q);
+  list.innerHTML = res.map(i=>`<div class="picker-item" data-id="${i.id}"><div>${i.name} <small>(${i.sku})</small></div><div><small>₹${(+i.price).toFixed(2)} · stock ${i.stock}</small></div></div>`).join('');
+  list.style.display = res.length?'block':'none';
+});
+list.addEventListener('click', e=>{
+  const row=e.target.closest('.picker-item'); if(!row) return;
+  const id=row.getAttribute('data-id'); selectedItem=Inventory.list().find(i=>i.id===id);
+  search.value = `${selectedItem.name} (${selectedItem.sku})`; rate.value=selectedItem.price; list.style.display='none';
+});
+search.addEventListener('keydown', e=>{ if(e.key==='Escape') list.style.display='none'; });
+search.addEventListener('focus', ()=>{ if(search.value.trim()) list.style.display='block'; });
+function clearPicker(){ selectedItem=null; itemSearch.value=''; qty.value=''; rate.value=''; tax.value=''; discount.value='0'; }
+
+// Lines and totals
+function addLine(){
+  const q=parseFloat(qty.value||0), r=parseFloat(rate.value||0), t=parseFloat(tax.value||0), d=parseFloat(discount.value||0);
+  if(!selectedItem){ alert('Select an item'); return; }
+  if(q<=0 || r<0){ alert('Quantity and rate must be valid'); return; }
+  lines.push({itemId:selectedItem.id, name:selectedItem.name, sku:selectedItem.sku, qty:q, rate:r, tax:t, disc:d});
+  renderLines(); clearPicker();
+}
+function renderLines(){
+  tbody.innerHTML = lines.map((l,i)=>{
+    const amt=l.qty*l.rate, taxAmt=amt*l.tax/100, discAmt=amt*l.disc/100, total=amt+taxAmt-discAmt;
+    return `<tr>
+      <td>${l.name}</td><td>${l.sku}</td>
+      <td class="right"><input type="number" value="${l.qty}" onchange="editQty(${i},this.value)"></td>
+      <td class="right"><input type="number" step="0.01" value="${l.rate}" onchange="editRate(${i},this.value)"></td>
+      <td class="right"><input type="number" value="${l.tax}" onchange="editTax(${i},this.value)"></td>
+      <td class="right"><input type="number" value="${l.disc}" onchange="editDisc(${i},this.value)"></td>
+      <td class="right">₹${(total).toFixed(2)}</td>
+      <td class="right"><button class="btn btn-danger" onclick="removeLine(${i})">🗑️</button></td>
+    </tr>`;
+  }).join('');
+  computeTotals();
+}
+function editQty(i,v){ lines[i].qty=Math.max(0,parseFloat(v||0)); computeTotals(); }
+function editRate(i,v){ lines[i].rate=Math.max(0,parseFloat(v||0)); computeTotals(); }
+function editTax(i,v){ lines[i].tax=Math.max(0,parseFloat(v||0)); computeTotals(); }
+function editDisc(i,v){ lines[i].disc=Math.max(0,parseFloat(v||0)); computeTotals(); }
+function removeLine(i){ lines.splice(i,1); renderLines(); }
+
+function computeTotals(){
+  let sub=0, tx=0, dc=0; for(const l of lines){ const a=l.qty*l.rate; sub+=a; tx+=a*l.tax/100; dc+=a*l.disc/100; }
+  const tot=sub+tx-dc;
+  s_sub.textContent='₹'+sub.toFixed(2); s_tax.textContent='₹'+tx.toFixed(2); s_disc.textContent='₹'+dc.toFixed(2); s_total.textContent='₹'+tot.toFixed(2);
+  const pv=parseFloat(paid.value||0); due.value='₹'+Math.max(0,tot-pv).toFixed(2);
+}
+paid.addEventListener('input', computeTotals);
+
+// Save
+function saveDraft(){
+  if(!lines.length){ alert('Add at least one item'); return; }
+  const payload={ customer:{name:custName.value.trim(),phone:custPhone.value.trim(),addr:custAddr.value.trim()}, date:billDate.value, items:lines,
+    totals:{ subtotal:num(s_sub.textContent), tax:num(s_tax.textContent), discount:num(s_disc.textContent), total:num(s_total.textContent), paid:+(paid.value||0), due:num(due.value)} };
+  payload.invoiceNo='INV-'+String((store.get('sales',[]).length+1)).padStart(4,'0');
+  Sales.save(payload); alert('✅ Saved: '+payload.invoiceNo);
+}
+function num(v){ return parseFloat(String(v).replace(/[₹,]/g,''))||0; }
+
+// Print
+function printBill(){
+  if(!lines.length){ alert('Nothing to print'); return; }
+  const html=`
+    <div class="inv">
+      <div class="inv-head"><h2>Kanaklata Agency</h2><div>Invoice No: <b>${'INV-'+String((store.get('sales',[]).length)).padStart(4,'0')}</b></div></div>
+      <div class="inv-meta"><div><b>Bill To:</b><br>${custName.value||'-'}<br>${custPhone.value||''}<br>${custAddr.value||''}</div><div><b>Date:</b> ${billDate.value||'-'}</div></div>
+      <table class="inv-tab"><thead><tr><th>Item</th><th>SKU</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Tax%</th><th class="r">Disc%</th><th class="r">Amount</th></tr></thead><tbody>
+        ${lines.map(l=>{ const a=l.qty*l.rate, t=a*l.tax/100, d=a*l.disc/100, tot=a+t-d; return `<tr><td>${l.name}</td><td>${l.sku}</td><td class="r">${l.qty}</td><td class="r">₹${l.rate.toFixed(2)}</td><td class="r">${l.tax}</td><td class="r">${l.disc}</td><td class="r">₹${tot.toFixed(2)}</td></tr>`; }).join('')}
+      </tbody></table>
+      <div class="inv-tot"><div>Subtotal:</div><div>₹${num(s_sub.textContent).toFixed(2)}</div><div>Tax:</div><div>₹${num(s_tax.textContent).toFixed(2)}</div><div>Discount:</div><div>₹${num(s_disc.textContent).toFixed(2)}</div><div class="sep"></div><div class="big">Total:</div><div class="big">₹${num(s_total.textContent).toFixed(2)}</div><div>Paid:</div><div>₹${(+paid.value||0).toFixed(2)}</div><div>Due:</div><div>₹${num(due.value).toFixed(2)}</div></div>
+      <p class="inv-note">Thank you for your business!</p>
+    </div>`;
+  printArea.innerHTML=html; window.print();
+}
+</script>
 </body>
 </html>

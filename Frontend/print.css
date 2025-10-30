@@ -1,0 +1,14 @@
+/* print.css */
+@page { size: A4; margin: 16mm 14mm; }
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.inv { font-family: Inter, Arial, sans-serif; color:#111; }
+.inv-head{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px; }
+.inv-head h2{ margin:0 }
+.inv-meta{ display:flex; justify-content:space-between; margin:8px 0 12px; }
+.inv-tab{ width:100%; border-collapse:collapse; }
+.inv-tab th, .inv-tab td{ padding:6px 8px; border-bottom:1px solid #ddd; }
+.inv-tab .r{ text-align:right }
+.inv-tot{ display:grid; grid-template-columns:1fr 160px; gap:6px 10px; margin-top:10px; }
+.inv-tot .sep{ grid-column:1 / -1; border-top:1px dashed #bbb; margin:4px 0 }
+.inv-tot .big{ font-size:1.1rem; font-weight:700 }
+.inv-note{ margin-top:12px; font-size:.95rem }

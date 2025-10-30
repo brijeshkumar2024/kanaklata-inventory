@@ -1,88 +1,238 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inventory · Kanaklata Agency</title>
-  <link rel="stylesheet" href="./admin.css" />
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory · Kanaklata Agency</title>
+<link rel="stylesheet" href="./admin.css">
+<style>
+  body,.main{background:radial-gradient(1350px circle at 25% 20%,#273043 0%,#1B202A 90%)!important;color:#e5e7eb;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .panel,.hero,.stat{background:rgba(33,37,50,.86)!important;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+  table th,table td{background:transparent!important;color:#e5e7eb!important;border-bottom:1px solid rgba(153,153,160,.13)}
+  .status-low{color:#fca5a5;background:rgba(239,68,68,.12);padding:.2rem .5rem;border-radius:6px}
+  input,select{background:rgba(44,48,64,.88);border:1px solid #3b4261;color:#e5e7eb;border-radius:7px;padding:9px 12px}
+  .btn{padding:.6rem .9rem;border-radius:8px;border:0}
+  .btn-primary{background:linear-gradient(90deg,#2363eb,#4a7ce8);color:#fff}
+  .btn-secondary{background:rgba(255,255,255,.14);color:#e5e7eb;border:1px solid rgba(255,255,255,.12)}
+  .modal-overlay{position:fixed;inset:0;background:rgba(16,22,32,.42);display:flex;align-items:center;justify-content:center;z-index:9999}
+  .modal-content{background:rgba(33,37,50,.94);padding:1.8rem;border-radius:16px;min-width:320px;max-width:95vw}
+</style>
 </head>
 <body>
-  <div class="layout">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Kanaklata Agency</div>
+    <nav class="nav">
+      <a href="adminindex.html">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a class="active" href="inventory.html">Inventory</a>
+      <a href="reports.html">Reports</a>
+      <a href="profiles.html">Profiles</a>
+      <a href="daily-sales.html">Daily Sales</a>
+    </nav>
+    <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+  </aside>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">Kanaklata Agency</div>
-      <nav class="nav">
-        <a href="adminindex.html">Dashboard</a>
-        <a href="workers.html">Workers</a>
-        <a href="orders.html">Orders</a>
-        <a href="payments.html">Payments</a>
-        <a class="active" href="inventory.html">Inventory</a>
-        <a href="reports.html">Reports</a>
-        <a href="profiles.html">Profiles</a>
-        <a href="daily-sales.html">Daily Sales</a>
-      </nav>
-      <div class="foot">
-        © <span id="y"></span> Kanaklata Agency
+  <header class="header"><h3>Inventory</h3></header>
+  <main class="main">
+    <div class="hero" style="padding:1rem 1.2rem;margin-bottom:1rem;">
+      <h1>📦 Items & Stock</h1>
+      <p>Track items, low‑stock alerts, and movements</p>
+    </div>
+
+    <div class="panel" style="padding:1rem;margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+      <input id="search" placeholder="Search by name or SKU" style="flex:1;min-width:240px">
+      <select id="catFilter"><option value="">All categories</option></select>
+      <label><input type="checkbox" id="lowOnly"> Low stock</label>
+      <button class="btn btn-primary" onclick="openNew()">➕ Add Item</button>
+      <button class="btn btn-secondary" onclick="exportCSV()">📤 Export</button>
+      <button class="btn btn-secondary" onclick="refresh()">🔄 Refresh</button>
+    </div>
+
+    <div class="stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+      <div class="stat" style="padding:1rem;text-align:center">
+        <div>Total Items</div><div id="k_items" style="font-size:1.6rem;font-weight:700">0</div>
       </div>
-    </aside>
+      <div class="stat" style="padding:1rem;text-align:center">
+        <div>In Stock</div><div id="k_stock" style="font-size:1.6rem;font-weight:700">0</div>
+      </div>
+      <div class="stat" style="padding:1rem;text-align:center">
+        <div>Low Stock</div><div id="k_low" style="font-size:1.6rem;font-weight:700">0</div>
+      </div>
+      <div class="stat" style="padding:1rem;text-align:center">
+        <div>Inventory Value</div><div id="k_value" style="font-size:1.6rem;font-weight:700">₹0.00</div>
+      </div>
+    </div>
 
-    <!-- Header -->
-    <header class="header">
-      <h3>Inventory</h3>
-    </header>
+    <div class="panel" style="padding:0 1rem 1rem">
+      <table id="tbl" style="width:100%">
+        <thead><tr>
+          <th>SKU</th><th>Name</th><th>Category</th><th>Unit</th><th>Price</th><th>Stock</th><th>Reorder</th><th>Updated</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="empty" style="text-align:center;padding:1rem;display:none">No items</div>
+    </div>
+  </main>
+</div>
 
-    <!-- Main Content -->
-    <main class="main">
-      <section class="panel">
-        <header class="panel-header">
-          <h3>Products</h3>
-        </header>
+<script src="./shared.js"></script>
+<script>
+document.getElementById("y").textContent = new Date().getFullYear();
 
-        <table id="products">
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Stock</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Products will load here -->
-          </tbody>
-        </table>
-      </section>
-    </main>
+let items = [];
+let view = [];
 
-  </div>
+async function load() {
+  items = await InventoryAPI.list();
+  view = [...items];
+  render();
+  fillCats();
+  updateStats();
+}
+function fillCats(){
+  const set = Array.from(new Set(items.map(i=>i.category))).filter(Boolean);
+  const sel = document.getElementById('catFilter');
+  sel.innerHTML = '<option value="">All categories</option>'+set.map(c=>`<option>${c}</option>`).join('');
+}
+function updateStats(){
+  const low = items.filter(i=>i.stock<=i.reorder_level).length;
+  const stock = items.reduce((s,i)=>s+i.stock,0);
+  const value = items.reduce((s,i)=>s+i.stock*i.price,0);
+  document.getElementById('k_items').textContent = items.length;
+  document.getElementById('k_stock').textContent = stock;
+  document.getElementById('k_low').textContent = low;
+  document.getElementById('k_value').textContent = money(value);
+}
+function render(){
+  const tb = document.getElementById('tbody');
+  document.getElementById('empty').style.display = view.length? 'none':'block';
+  tb.innerHTML = view.map(i=>`
+    <tr>
+      <td><b>${i.sku}</b></td>
+      <td>${i.name}</td>
+      <td>${i.category||'-'}</td>
+      <td>${i.unit||'-'}</td>
+      <td>${money(i.price)}</td>
+      <td>${i.stock} ${i.stock<=i.reorder_level?'<span class="status-low">Low</span>':''}</td>
+      <td>${i.reorder_level}</td>
+      <td>${fmtDate(i.updated_at)}</td>
+      <td>
+        <button class="btn btn-secondary" onclick="openEdit('${i.id}')">✏️</button>
+        <button class="btn btn-secondary" onclick="openMove('${i.id}')">📥/📤</button>
+        <button class="btn btn-secondary" onclick="openHistory('${i.id}')">🕓</button>
+        <button class="btn btn-secondary" onclick="removeItem('${i.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
 
-  <script src="./shared.js"></script>
-  <script>
-    const base = 'http://localhost:8080/api';
+document.getElementById('search').addEventListener('input',applyFilters);
+document.getElementById('catFilter').addEventListener('change',applyFilters);
+document.getElementById('lowOnly').addEventListener('change',applyFilters);
+function applyFilters(){
+  const q = document.getElementById('search').value.toLowerCase();
+  const c = document.getElementById('catFilter').value;
+  const low = document.getElementById('lowOnly').checked;
+  view = items.filter(i=>{
+    const s = i.name.toLowerCase().includes(q)||i.sku.toLowerCase().includes(q);
+    const cat = !c || i.category===c;
+    const l = !low || i.stock<=i.reorder_level;
+    return s && cat && l;
+  });
+  render();
+}
 
-    async function load() {
-      try {
-        const res = await fetch(`${base}/products`);
-        const data = await res.json();
+function modal(html){
+  let m = document.getElementById('modal');
+  if(!m){ m=document.createElement('div'); m.id='modal'; m.className='modal-overlay'; document.body.appendChild(m); }
+  m.innerHTML = `<div class="modal-content">${html}</div>`; m.style.display='flex';
+}
+function closeModal(){ const m=document.getElementById('modal'); if(m) m.style.display='none'; }
+function idGen(prefix,len=3){ return prefix+'-'+String(Math.floor(Math.random()*10**len)).padStart(len,'0'); }
 
-        qs('#products tbody').innerHTML = data.map(p => `
-          <tr>
-            <td>${p.sku}</td>
-            <td>${p.name}</td>
-            <td>₹${Number(p.price || 0).toLocaleString('en-IN')}</td>
-            <td>${p.stock || 0}</td>
-          </tr>
-        `).join('');
-      } catch (err) {
-        console.error('Error loading products:', err);
-        qs('#products tbody').innerHTML = `
-          <tr><td colspan="4" style="text-align:center; color:red;">Failed to load products</td></tr>
-        `;
-      }
-    }
+function openNew(){
+  modal(`
+    <h3>New Item</h3>
+    <form id="f">
+      <input placeholder="SKU" id="sku" required><br>
+      <input placeholder="Name" id="name" required><br>
+      <input placeholder="Category" id="cat"><br>
+      <input placeholder="Unit" id="unit"><br>
+      <input type="number" step="0.01" placeholder="Price" id="price" required><br>
+      <input type="number" placeholder="Stock" id="stock" required><br>
+      <input type="number" placeholder="Reorder level" id="reorder" required><br>
+      <button class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </form>
+  `);
+  document.getElementById('f').onsubmit = async (e)=>{
+    e.preventDefault();
+    const it = {
+      id: idGen('ITM',3), sku:sku.value, name:name.value, category:cat.value, unit:unit.value,
+      price: parseFloat(price.value||0), stock: parseInt(stock.value||0,10), reorder_level: parseInt(reorder.value||0,10), updated_at:new Date().toISOString()
+    };
+    await InventoryAPI.create(it); await load(); closeModal(); alert('✅ Item created');
+  };
+}
+function openEdit(id){
+  const it = items.find(x=>x.id===id);
+  modal(`
+    <h3>Edit Item</h3>
+    <form id="f">
+      <input id="sku" value="${it.sku}" required><br>
+      <input id="name" value="${it.name}" required><br>
+      <input id="cat" value="${it.category||''}"><br>
+      <input id="unit" value="${it.unit||''}"><br>
+      <input type="number" step="0.01" id="price" value="${it.price}" required><br>
+      <input type="number" id="reorder" value="${it.reorder_level}" required><br>
+      <button class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </form>
+  `);
+  document.getElementById('f').onsubmit = async (e)=>{
+    e.preventDefault();
+    await InventoryAPI.update(id,{sku:sku.value,name:name.value,category:cat.value,unit:unit.value,price:parseFloat(price.value),reorder_level:parseInt(reorder.value,10)});
+    await load(); closeModal(); alert('✅ Item updated');
+  };
+}
+function openMove(id){
+  modal(`
+    <h3>Stock Movement</h3>
+    <form id="f">
+      <select id="type"><option value="IN">IN</option><option value="OUT">OUT</option><option value="ADJUST">ADJUST</option></select><br>
+      <input type="number" id="qty" placeholder="Quantity" required><br>
+      <input id="reason" placeholder="Reason"><br>
+      <button class="btn btn-primary">Apply</button>
+      <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </form>
+  `);
+  document.getElementById('f').onsubmit = async (e)=>{
+    e.preventDefault();
+    const q = Math.max(0, parseInt(qty.value||0,10));
+    await InventoryAPI.move({itemId:id, type:type.value, qty:q, reason:reason.value});
+    await load(); closeModal(); alert('✅ Stock updated');
+  };
+}
+async function openHistory(id){
+  const moves = await InventoryAPI.history(id);
+  modal(`<h3>Movement History</h3>
+    <div style="max-height:50vh;overflow:auto">
+      ${moves.length?'<ul style="line-height:1.8">'+moves.map(m=>`<li>${fmtDate(m.at)} · <b>${m.type}</b> · qty ${m.qty} · ${m.reason||''}</li>`).join(''):'No movements'}
+    </ul></div>
+    <button class="btn btn-secondary" onclick="closeModal()">Close</button>`);
+}
+async function removeItem(id){
+  if(confirm('Delete this item?')){ await InventoryAPI.remove(id); await load(); alert('✅ Item deleted'); }
+}
+function exportCSV(){
+  const rows = [['SKU','Name','Category','Unit','Price','Stock','Reorder','Updated'],
+    ...view.map(i=>[i.sku,i.name,i.category||'',i.unit||'',i.price,i.stock,i.reorder_level,i.updated_at])];
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = 'inventory_'+new Date().toISOString().split('T')[0]+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+async function refresh(){ items = await InventoryAPI.list(); view=[...items]; render(); updateStats(); alert('✅ Refreshed'); }
 
-    load();
-  </script>
-</body>
-</html>
+load();
+</script>
+</body></html>

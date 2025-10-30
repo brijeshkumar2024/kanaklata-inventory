@@ -1,10 +1,268 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1" /> <title>Profiles · Kanaklata Agency</title> <link rel="stylesheet" href="./admin.css" /> </head> <body> <div class="layout"> <aside class="sidebar"> <div class="brand">Kanaklata Agency</div> <nav class="nav"> <a href="adminindex.html">Dashboard</a> <a href="workers.html">Workers</a> <a href="orders.html">Orders</a> <a href="payments.html">Payments</a> <a href="inventory.html">Inventory</a> <a href="reports.html">Reports</a> <a class="active" href="profiles.html">Profiles</a> <a href="daily-sales.html">Daily Sales</a> </nav> <div class="foot">© <span id="y"></span> Kanaklata Agency</div> </aside>
-text
-<header class="header"><h3 style="margin:0">Profiles</h3></header>
-<main class="main">
-  <section class="panel">
-    <header><h3 style="margin:0">Coming Soon</h3></header>
-    <p style="margin:0">Add user profile management here.</p>
-  </section>
-</main>
-</div> <script src="./shared.js"></script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profiles · Kanaklata Agency</title>
+<link rel="stylesheet" href="./admin.css">
+<style>
+  :root{
+    --bg-1:#1B202A; --ink:#e5e7eb; --muted:#a8b0bf;
+    --card:rgba(33,37,50,.86); --ring:#3b82f6; --bd:#3b4261;
+    --ok:#34d399;
+  }
+  html,body{height:100%}
+  body,.main{background:radial-gradient(1350px circle at 25% 20%, #273043 0%, var(--bg-1) 90%)!important;color:var(--ink);font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+  .layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  .sidebar{padding:1rem;background:rgba(22,26,37,.94);display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 24px rgba(0,0,0,.25)}
+  .brand{font-size:1.1rem;font-weight:700;letter-spacing:.2px;margin:.4rem 0 1rem}
+  .nav a{display:block;padding:.6rem .4rem;border-radius:8px;color:var(--ink);text-decoration:none}
+  .nav a:hover{background:rgba(255,255,255,.05)}
+  .nav a.active{color:var(--ring);background:rgba(59,130,246,.10)}
+  .header{position:sticky;top:0;z-index:5;padding:1rem 1.25rem;background:rgba(33,37,50,.72);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.08)}
+  .page{max-width:1200px;margin:0 auto}
+  .hero,.panel{background:var(--card)!important;border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+  .hero{margin:18px 0;padding:1.1rem 1.2rem}
+  .panel{margin:18px 0;padding:1rem;overflow:hidden}
+  input,select{background:rgba(44,48,64,.88);border:1px solid var(--bd);color:var(--ink);border-radius:9px;padding:10px 12px;outline:none;transition:border .15s, box-shadow .15s}
+  input:focus,select:focus{border-color:var(--ring);box-shadow:0 0 0 3px rgba(59,130,246,.25)}
+  .toolbar{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center}
+  .btn{padding:.6rem .9rem;border-radius:10px;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:.55rem;white-space:nowrap}
+  .btn-primary{background:linear-gradient(90deg,#2363eb,#4a7ce8);color:#fff;box-shadow:0 6px 16px rgba(59,130,246,.22)}
+  .btn-secondary{background:rgba(255,255,255,.12);color:var(--ink);border:1px solid rgba(255,255,255,.10)}
+  .btn-icon{padding:.44rem .58rem;min-width:38px;justify-content:center}
+  .table-wrap{position:relative;border-radius:14px;overflow:auto;scrollbar-gutter:stable both-edges;max-height:66vh}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{position:sticky;top:0;background:rgba(33,37,50,.92)!important;backdrop-filter:blur(4px);z-index:2}
+  th,td{padding:12px 14px;border-bottom:1px solid rgba(153,153,160,.13);text-align:left;vertical-align:middle}
+  tbody tr{transition:background .15s} tbody tr:hover{background:rgba(59,130,246,.06)}
+  .badge{padding:.25rem .55rem;border-radius:999px;background:rgba(255,255,255,.14);font-size:.85rem}
+  .status-active{color:var(--ok)} .status-inactive{color:#fca5a5}
+  th.actions, td.actions{width:220px}
+  td.actions{ text-align:right; padding-right:16px }
+  .actions-bar{display:inline-flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; min-width:200px}
+  .modal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(16,22,32,.42);z-index:9999;padding:1rem}
+  .modal-content{background:rgba(33,37,50,.96);padding:1.2rem 1.2rem;border-radius:16px;min-width:min(560px,95vw)}
+  .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+  @media (max-width: 1180px){
+    .toolbar{grid-template-columns:1fr 1fr 1fr;grid-auto-rows:min-content}
+    .toolbar > div:last-child{grid-column:1 / -1; justify-content:flex-start; flex-wrap:wrap}
+  }
+  @media (max-width: 860px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{position:sticky;top:0;z-index:6}
+    .modal-content{min-width:min(360px,96vw)}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div>
+      <div class="brand">Kanaklata Agency</div>
+      <nav class="nav">
+        <a href="adminindex.html">Dashboard</a>
+        <a href="workers.html">Workers</a>
+        <a href="orders.html">Orders</a>
+        <a href="payments.html">Payments</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="reports.html">Reports</a>
+        <a class="active" href="profiles.html">Profiles</a>
+        <a href="daily-sales.html">Daily Sales</a>
+      </nav>
+    </div>
+    <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <header class="header"><h3>Profiles</h3></header>
+
+      <section class="hero">
+        <h1 style="margin:.2rem 0">👤 Users & Roles</h1>
+        <p style="color:var(--muted);margin:.2rem 0 0">Manage user accounts, roles, and status</p>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <input id="search" placeholder="Search name or username">
+          <select id="roleFilter"><option value="">All roles</option></select>
+          <select id="statusFilter"><option value="">All statuses</option><option>active</option><option>inactive</option></select>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="openNew()">➕ Add User</button>
+            <button class="btn btn-secondary" onclick="exportCSV()">📤 Export</button>
+            <button class="btn btn-secondary" onclick="refresh()">🔄 Refresh</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel table-wrap" style="padding:0">
+        <table>
+          <thead><tr>
+            <th style="width:22%">Name</th>
+            <th style="width:18%">Username</th>
+            <th style="width:16%">Role</th>
+            <th style="width:14%">Status</th>
+            <th style="width:16%">Created</th>
+            <th class="actions">Actions</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty" class="empty" style="display:none">No users</div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+document.getElementById("y").textContent = new Date().getFullYear();
+
+// Utilities and storage
+function fmtDate(d){ try{return new Date(d).toLocaleDateString();}catch{return d;} }
+const store = { get:(k,f=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(f)), set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)) };
+
+// Fake API
+const ProfilesAPI = {
+  async list(){ return store.get('users', []); },
+  async create(u){ const xs=store.get('users',[]); xs.push(u); store.set('users',xs); },
+  async update(id,data){ const xs=store.get('users',[]); const i=xs.findIndex(x=>x.id===id); if(i>-1){ xs[i]={...xs[i],...data}; store.set('users',xs);} },
+  async toggle(id){ const xs=store.get('users',[]); const i=xs.findIndex(x=>x.id===id); if(i>-1){ xs[i].status=xs[i].status==='active'?'inactive':'active'; store.set('users',xs);} },
+  async resetPassword(){ return true; },
+  async roles(){ return ['Admin','Manager','Staff','Viewer']; }
+};
+
+// State
+let users=[], view=[], roles=[];
+
+async function load(){
+  // Clean corrupted entries (missing name or username) once
+  const raw = store.get('users', []);
+  const cleaned = raw.filter(u => u && u.name && u.username);
+  if (cleaned.length !== raw.length) store.set('users', cleaned);
+
+  users = cleaned;
+  if(users.length===0){
+    users = [
+      {id:'USR-0001',name:'Alice',username:'alice',role:'Admin',status:'active',created_at:new Date().toISOString()},
+      {id:'USR-0002',name:'Bob',username:'bob',role:'Manager',status:'inactive',created_at:new Date().toISOString()}
+    ];
+    store.set('users', users);
+  }
+  view=[...users];
+  roles=await ProfilesAPI.roles();
+  document.getElementById('roleFilter').innerHTML = '<option value="">All roles</option>'+roles.map(r=>`<option>${r}</option>`).join('');
+  render();
+}
+
+function render(){
+  const tb=document.getElementById('tbody');
+  const empty=document.getElementById('empty');
+  empty.style.display = view.length? 'none':'block';
+  tb.innerHTML = view.map(u=>`
+    <tr>
+      <td>${u?.name || '-'}</td>
+      <td>${u?.username || '-'}</td>
+      <td><span class="badge">${u?.role || '-'}</span></td>
+      <td class="${'status-'+(u?.status||'inactive')}">${u?.status || '-'}</td>
+      <td>${u?.created_at ? fmtDate(u.created_at) : '-'}</td>
+      <td class="actions">
+        <div class="actions-bar">
+          <button class="btn btn-secondary btn-icon" title="Edit" onclick="openEdit('${u.id}')">✏️</button>
+          <button class="btn btn-secondary btn-icon" title="Toggle" onclick="toggleUser('${u.id}')">${u.status==='active'?'⏸️':'▶️'}</button>
+          <button class="btn btn-secondary btn-icon" title="Reset" onclick="reset('${u.id}')">🔑</button>
+          <button class="btn btn-secondary btn-icon" title="Delete" onclick="removeUser('${u.id}')">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Filters
+document.getElementById('search').addEventListener('input',apply);
+document.getElementById('roleFilter').addEventListener('change',apply);
+document.getElementById('statusFilter').addEventListener('change',apply);
+function apply(){
+  const q=search.value.toLowerCase(), r=roleFilter.value, s=statusFilter.value;
+  view = users.filter(u=>{
+    const mm = (u.name||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q);
+    const rr = !r || u.role===r; const ss = !s || u.status===s;
+    return mm && rr && ss;
+  });
+  render();
+}
+
+// Modal helpers
+function modal(html){
+  let m=document.getElementById('modal');
+  if(!m){ m=document.createElement('div'); m.id='modal'; m.className='modal-overlay'; document.body.appendChild(m); }
+  m.innerHTML=`<div class="modal-content">${html}</div>`; m.style.display='flex';
+}
+function closeModal(){ const m=document.getElementById('modal'); if(m) m.style.display='none'; }
+function idGen(){ return 'USR-'+String(Math.floor(Math.random()*10000)).padStart(4,'0'); }
+
+// Forms
+function openNew(){
+  modal(`<h3 style="margin:.2rem 0 1rem">New User</h3>
+    <form id="f" class="modal-grid">
+      <input id="name" placeholder="Full name" required>
+      <input id="username" placeholder="Username" required>
+      <select id="role">${roles.map(r=>`<option>${r}</option>`).join('')}</select>
+      <select id="status"><option>active</option><option>inactive</option></select>
+      <div class="modal-actions" style="grid-column:1 / -1">
+        <button class="btn btn-primary">Create</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>`);
+  document.getElementById('f').onsubmit = async e=>{
+    e.preventDefault();
+    const nameVal = name.value.trim(), userVal = username.value.trim();
+    if(!nameVal || !userVal){ alert('Name and Username are required'); return; }
+    const u={id:idGen(), name:nameVal, username:userVal, role:role.value, status:status.value, created_at:new Date().toISOString()};
+    await ProfilesAPI.create(u); await load(); closeModal(); alert('✅ User created');
+  };
+}
+function openEdit(id){
+  const u=users.find(x=>x.id===id);
+  modal(`<h3 style="margin:.2rem 0 1rem">Edit User</h3>
+    <form id="f" class="modal-grid">
+      <input id="name" value="${u?.name||''}" required>
+      <input id="username" value="${u?.username||''}" required>
+      <select id="role">${roles.map(r=>`<option ${u?.role===r?'selected':''}>${r}</option>`).join('')}</select>
+      <select id="status"><option ${u?.status==='active'?'selected':''}>active</option><option ${u?.status==='inactive'?'selected':''}>inactive</option></select>
+      <div class="modal-actions" style="grid-column:1 / -1">
+        <button class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>`);
+  document.getElementById('f').onsubmit = async e=>{
+    e.preventDefault();
+    const nameVal = name.value.trim(), userVal = username.value.trim();
+    if(!nameVal || !userVal){ alert('Name and Username are required'); return; }
+    await ProfilesAPI.update(id,{name:nameVal, username:userVal, role:role.value, status:status.value});
+    await load(); closeModal(); alert('✅ User updated');
+  };
+}
+
+// Actions
+async function toggleUser(id){ await ProfilesAPI.toggle(id); await load(); alert('✅ Status changed'); }
+async function reset(id){ await ProfilesAPI.resetPassword(id); alert('🔑 Temporary password updated'); }
+async function removeUser(id){
+  if(confirm('Delete this user?')){
+    const xs=store.get('users',[]).filter(u=>u && u.id!==id); store.set('users',xs);
+    await load(); alert('✅ User deleted');
+  }
+}
+
+// Export/Refresh
+function exportCSV(){
+  const rows=[['Name','Username','Role','Status','Created'],...view.map(u=>[u.name||'',u.username||'',u.role||'',u.status||'',u.created_at||''])];
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='profiles_'+new Date().toISOString().split('T')[0]+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+async function refresh(){ await load(); alert('✅ Refreshed'); }
+
+load();
+</script>
+</body>
+</html>
