@@ -1,10 +1,199 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1" /> <title>Daily Sales · Kanaklata Agency</title> <link rel="stylesheet" href="./admin.css" /> </head> <body> <div class="layout"> <aside class="sidebar"> <div class="brand">Kanaklata Agency</div> <nav class="nav"> <a href="adminindex.html">Dashboard</a> <a href="workers.html">Workers</a> <a href="orders.html">Orders</a> <a href="payments.html">Payments</a> <a href="inventory.html">Inventory</a> <a href="reports.html">Reports</a> <a href="profiles.html">Profiles</a> <a class="active" href="daily-sales.html">Daily Sales</a> </nav> <div class="foot">© <span id="y"></span> Kanaklata Agency</div> </aside>
-text
-<header class="header"><h3 style="margin:0">Daily Sales</h3></header>
-<main class="main">
-  <section class="panel">
-    <header><h3 style="margin:0">Coming Soon</h3></header>
-    <p style="margin:0">Show today’s totals and a date picker here.</p>
-  </section>
-</main>
-</div> <script src="./shared.js"></script> </body> </html>[
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Sales · Kanaklata Agency</title>
+  <link rel="stylesheet" href="./admin.css" />
+  <style>
+    body, .main {
+      background: radial-gradient(1350px circle at 25% 20%, #273043 0%, #1B202A 90%) !important;
+      color: #e5e7eb;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .sidebar {
+      background: rgba(22,26,37,0.94);
+      box-shadow: 0 0 24px 0 rgba(0,0,0,0.25);
+    }
+    .sales-panel, .sales-hero, .stat-grid .stat-card {
+      background: rgba(33,37,50,0.86) !important;
+      color: #e5e7eb !important;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+    }
+    .sales-hero {
+      margin-bottom: 2.1rem;
+      padding: 2.5rem 2rem 1.5rem;
+      border-radius: 18px;
+      text-align: center;
+      position: relative;
+    }
+    .sales-hero h1 {
+      background: linear-gradient(135deg, #3b82f6, #10b981, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      margin-top: 0;
+    }
+    .subtitle {
+      font-size: 1.08rem;
+      color: #b8bfc9;
+      letter-spacing: .02em;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 2.1rem;
+      position: relative;
+      z-index: 2;
+    }
+    .stat-card {
+      background: rgba(33,37,50,0.86);
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+      color: #e5e7eb;
+      padding: 1.8rem 1.2rem 1.3rem;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: background 0.23s;
+    }
+    .stat-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.7rem;
+      margin-bottom: 1.2rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover .stat-icon, .stat-card:focus .stat-icon {
+      transform: scale(1.13) rotate(7deg);
+      box-shadow: 0 0 0 6px #7fcff944, 0 10px 22px #3b82f6de;
+      filter: brightness(1.15) drop-shadow(0 0 4px #3b82f6b6);
+    }
+    .stat-number {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.12;
+    }
+    .stat-label {
+      margin-top: 0.2rem;
+      font-size: 1.08rem;
+      color: #bcc5d4;
+      font-weight: 500;
+    }
+    /* Date picker and actions */
+    .action-bar {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      justify-content: flex-end;
+      padding: 1.2rem 2rem;
+      border-radius: 1.2em;
+    }
+    .date-picker {
+      font-size: 1rem;
+      padding: 0.6em 1em;
+      background: rgba(44,48,64,0.88);
+      border: 1px solid #3b4261;
+      color: #e5e7eb;
+      border-radius: 9px;
+    }
+    .date-picker:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+    .sales-panel {
+      padding: 2rem;
+      border-radius: 18px;
+      margin-bottom: 2.1rem;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+    .sales-panel h3 {
+      margin-bottom: 1.2rem;
+      font-size: 1.15rem;
+      letter-spacing: .02em;
+      color: #e5e7eb;
+    }
+    .empty-state {
+      text-align: center;
+      color: #b9bcc4;
+      margin: 2.2rem 0 1.1rem;
+      opacity: .85;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Kanaklata Agency</div>
+      <nav class="nav">
+        <a href="adminindex.html">Dashboard</a>
+        <a href="workers.html">Workers</a>
+        <a href="orders.html">Orders</a>
+        <a href="payments.html">Payments</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="reports.html">Reports</a>
+        <a href="profiles.html">Profiles</a>
+        <a class="active" href="daily-sales.html">Daily Sales</a>
+      </nav>
+      <div class="foot">© <span id="y"></span> Kanaklata Agency</div>
+    </aside>
+    <header class="header">
+      <h3 style="margin:0">Daily Sales</h3>
+    </header>
+    <main class="main">
+      <div class="sales-hero">
+        <h1>📈 Daily Sales</h1>
+        <p class="subtitle">
+          Review today’s earnings, orders, and revenue at a glance. Select any date to view totals for that day.
+        </p>
+      </div>
+      <div class="action-bar">
+        <input type="date" id="salesDate" class="date-picker" value="">
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#4286f4,#38b6ff);">&#128200;</div>
+          <div class="stat-number" id="todays-orders">0</div>
+          <div class="stat-label">Orders Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#50b08a,#00b894);">&#128176;</div>
+          <div class="stat-number" id="todays-revenue">0</div>
+          <div class="stat-label">Revenue Today (₹)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#fabe28,#f76c1b);">&#128202;</div>
+          <div class="stat-number" id="todays-sales">0</div>
+          <div class="stat-label">Sales Count</div>
+        </div>
+      </div>
+      <section class="sales-panel">
+        <h3>Coming Soon</h3>
+        <div class="empty-state">
+          Show today’s totals, date selection and sale breakdown here.
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear();
+    // Set today by default for demo
+    document.getElementById('salesDate').value = new Date().toISOString().slice(0,10);
+    // Future: connect with backend and orders data to show stats on date change
+    // document.getElementById('salesDate').addEventListener('change', function(e) { ... });
+  </script>
+</body>
+</html>
