@@ -1,10 +1,381 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1" /> <title>Reports · Kanaklata Agency</title> <link rel="stylesheet" href="./admin.css" /> </head> <body> <div class="layout"> <aside class="sidebar"> <div class="brand">Kanaklata Agency</div> <nav class="nav"> <a href="adminindex.html">Dashboard</a> <a href="workers.html">Workers</a> <a href="orders.html">Orders</a> <a href="payments.html">Payments</a> <a href="inventory.html">Inventory</a> <a class="active" href="reports.html">Reports</a> <a href="profiles.html">Profiles</a> <a href="daily-sales.html">Daily Sales</a> </nav> <div class="foot">© <span id="y"></span> Kanaklata Agency</div> </aside>
-text
-<header class="header"><h3 style="margin:0">Reports</h3></header>
-<main class="main">
-  <section class="panel">
-    <header><h3 style="margin:0">Coming Soon</h3></header>
-    <p style="margin:0">Add filters and export buttons here.</p>
-  </section>
-</main>
-</div> <script src="./shared.js"></script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inventory Reports | IMS</title>
+  <style>
+    /* ===== Dark Theme Base ===== */
+    :root{
+      --bg: #121212;
+      --panel: #1e1e1e;
+      --muted: #9a9a9a;
+      --accent: #00bcd4;
+      --text: #f1f1f1;
+    }
+
+    html,body{height:100%; margin:0;}
+    body {
+      margin: 0;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background-color: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    header {
+      background-color: var(--panel);
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--accent);
+      letter-spacing: .2px;
+    }
+
+    header .meta { color: var(--muted); font-size: .95rem; }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+
+    /* Filters */
+    .filters {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom:16px;
+    }
+
+    .filters label { color:var(--muted); font-size:.9rem; margin-right:6px; }
+    .filters input[type="date"],
+    .filters button,
+    .filters select {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: .95rem;
+      outline: none;
+    }
+
+    .filters button {
+      background: linear-gradient(90deg, rgba(0,188,212,0.12), rgba(0,188,212,0.08));
+      color: var(--text);
+      border: 1px solid rgba(0,188,212,0.12);
+      cursor: pointer;
+      font-weight:600;
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-height:84px;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .card .label { color:var(--muted); font-size:.88rem; }
+    .card .value {
+      font-size:1.25rem;
+      font-weight:700;
+      color:var(--text);
+      letter-spacing:.3px;
+    }
+    .card .value.placeholder { color: rgba(255,255,255,0.12); }
+
+    /* Chart box */
+    .chart-box {
+      background: var(--panel);
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      margin-bottom: 18px;
+    }
+    .chart-box h2 { margin:0 0 8px 0; color:var(--accent); font-size:1rem; }
+
+    /* Table */
+    .table-wrap {
+      background: var(--panel);
+      border-radius: 10px;
+      overflow: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      margin-bottom: 18px;
+    }
+
+    table {
+      width:100%;
+      border-collapse: collapse;
+      min-width: 800px; /* allows horizontal scroll on small screens */
+    }
+
+    thead th {
+      text-align:center;
+      padding:12px 14px;
+      background: linear-gradient(90deg, var(--accent), rgba(0,188,212,0.6));
+      color:#000;
+      font-weight:600;
+      position: sticky;
+      top:0;
+    }
+
+    tbody td {
+      padding:12px 14px;
+      text-align:center;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color:var(--text);
+    }
+
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Export & actions */
+    .actions {
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-bottom: 22px;
+    }
+    .btn {
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,0.04);
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      color:var(--text);
+      font-weight:600;
+    }
+
+    /* Footer */
+    footer {
+      text-align:center;
+      color:var(--muted);
+      padding:12px 0 40px 0;
+      font-size:.9rem;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width:640px){
+      header h1{font-size:1.05rem;}
+      .filters{gap:8px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>📊 Inventory Reports</h1>
+    </div>
+    <div class="meta">Admin Panel</div>
+  </header>
+
+  <main class="container">
+    <!-- Filters (backend will control values) -->
+    <div class="filters" role="region" aria-label="filters">
+      <div>
+        <label for="fromDate">From:</label>
+        <input id="fromDate" type="date" data-bind="fromDate">
+      </div>
+      <div>
+        <label for="toDate">To:</label>
+        <input id="toDate" type="date" data-bind="toDate">
+      </div>
+      <div>
+        <button id="generateBtn" class="btn" data-action="generate">Generate</button>
+      </div>
+      <div style="margin-left:auto;">
+        <select id="presetRange" data-bind="presetRange" aria-label="preset ranges">
+          <option value="">Select range</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Summary cards: values empty; backend should fill elements with data-key attributes -->
+    <section class="cards" aria-label="summary cards">
+      <div class="card">
+        <div class="label">Total Products</div>
+        <div class="value placeholder" data-key="totalProducts">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Total Sales</div>
+        <div class="value placeholder" data-key="totalSales">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Low Stock Items</div>
+        <div class="value placeholder" data-key="lowStockCount">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Active Workers</div>
+        <div class="value placeholder" data-key="activeWorkers">—</div>
+      </div>
+    </section>
+
+    <!-- Chart area (canvas left empty; backend will provide data via JS) -->
+    <section class="chart-box" aria-label="charts">
+      <h2>Daily Sales (Bar)</h2>
+      <canvas id="salesChart" width="800" height="300" aria-label="daily sales bar chart"></canvas>
+    </section>
+
+    <!-- Data table: header defined, body left empty for backend population -->
+    <div class="table-wrap" role="table" aria-label="report table">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Item Name</th>
+            <th>Qty In</th>
+            <th>Qty Out</th>
+            <th>Current Stock</th>
+            <th>Worker</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="reportBody">
+          <!-- No rows here — backend should insert <tr> rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Actions: export buttons (no behavior implemented) -->
+    <div class="actions">
+      <button class="btn" data-action="export-pdf">Export PDF</button>
+      <button class="btn" data-action="export-csv">Export CSV</button>
+      <button class="btn" data-action="print">Print</button>
+    </div>
+  </main>
+
+  <footer>
+    Inventory Management System
+  </footer>
+
+  <!-- Chart.js (frontend hook only; data arrays are empty so chart shows no bars until backend supplies data) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    /* -------------------------
+       Frontend-only: chart init
+       Backend should update chartData.labels and chartData.values
+       and call updateChart() after fetching real data.
+       ------------------------- */
+
+    // Prepare an empty chart instance (no visible numbers/content)
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    // data object is intentionally empty; backend will populate labels and values
+    const chartData = {
+      labels: [],   // e.g. populate with dates
+      values: []    // e.g. populate with amounts
+    };
+
+    const salesChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: '',
+          data: chartData.values,
+          backgroundColor: [], // backend can set colors if desired
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#ffffff' },
+            grid: { display: false }
+          },
+          y: {
+            ticks: { color: '#ffffff' },
+            grid: { color: 'rgba(255,255,255,0.03)' }
+          }
+        }
+      }
+    });
+
+    // Expose a function for backend scripts to call after fetching data
+    window.updateReportFrontend = function(payload){
+      // payload = { cards: { key: value, ... }, tableRows: [ {date, name, in, out, stock, worker, remarks}, ... ],
+      // chart: { labels: [...], values: [...], colors: [...] } }
+      try {
+        // Update cards
+        if(payload.cards){
+          Object.keys(payload.cards).forEach(k=>{
+            const el = document.querySelector([data-key="${k}"]);
+            if(el){
+              el.classList.remove('placeholder');
+              el.textContent = payload.cards[k] ?? '';
+            }
+          });
+        }
+
+        // Update table
+        if(Array.isArray(payload.tableRows)){
+          const tbody = document.getElementById('reportBody');
+          tbody.innerHTML = ''; // clear existing
+          payload.tableRows.forEach(row=>{
+            const tr = document.createElement('tr');
+            ['date','name','in','out','stock','worker','remarks'].forEach(col=>{
+              const td = document.createElement('td');
+              td.textContent = row[col] ?? '';
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        }
+
+        // Update chart
+        if(payload.chart){
+          salesChart.data.labels = payload.chart.labels || [];
+          salesChart.data.datasets[0].data = payload.chart.values || [];
+          if(Array.isArray(payload.chart.colors) && payload.chart.colors.length){
+            salesChart.data.datasets[0].backgroundColor = payload.chart.colors;
+          } else {
+            // fallback: generate neutral transparent colors equal to labels count
+            salesChart.data.datasets[0].backgroundColor = (salesChart.data.labels || []).map(()=> 'rgba(0,188,212,0.9)');
+          }
+          salesChart.update();
+        }
+      } catch(e){
+        // silently fail here; backend can handle logging
+        console.error('updateReportFrontend error', e);
+      }
+    };
+
+    /* Notes for backend integration:
+       - Call window.updateReportFrontend(...) with the payload described above after fetching data.
+       - Inputs have data-bind attributes that can be used to read user filters.
+       - Buttons have data-action attributes for wiring actions (generate, export, print).
+       - No sample numbers or rows are present in this file.
+    */
+  </script>
+</body>
+</html>
